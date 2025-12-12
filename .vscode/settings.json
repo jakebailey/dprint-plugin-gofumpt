@@ -1,0 +1,10 @@
+{
+    "gopls": {
+        "ui.diagnostic.analyses": {
+            "unusedfunc": false
+        },
+        "build.buildFlags": [
+            "-tags=tinygo"
+        ]
+    }
+}

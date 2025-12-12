@@ -1,0 +1,10 @@
+module github.com/jakebailey/dprint-plugin-gofumpt
+
+go 1.24.0
+
+require mvdan.cc/gofumpt v0.9.2
+
+require (
+	github.com/google/go-cmp v0.7.0 // indirect
+	golang.org/x/tools v0.38.0 // indirect
+)

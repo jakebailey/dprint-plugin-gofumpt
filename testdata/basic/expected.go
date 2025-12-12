@@ -1,0 +1,7 @@
+package basic
+
+func foo() {
+	x := 1
+
+	_ = x
+}
