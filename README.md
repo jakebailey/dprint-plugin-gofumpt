@@ -36,3 +36,12 @@ formatting results, as the plugin cannot infer this information from `go.mod`.
 | `langVersion` | `string`  | `""`    | The Go language version to target (e.g., `"go1.24"`). Must start with `go` prefix. If empty, defaults to `go1`. |
 | `modulePath`  | `string`  | `""`    | The module path of the package being formatted. Used for import sorting.                                        |
 | `extraRules`  | `boolean` | `false` | Enable extra formatting rules beyond the default gofumpt rules.                                                 |
+
+## Versions
+
+This plugin is versioned separately from `gofumpt`. Below is a table of which
+plugin versions correspond to which `gofumpt` versions.
+
+| Plugin Version | gofumpt Version |
+| -------------- | --------------- |
+| v0.0.0+        | v0.9.2          |
