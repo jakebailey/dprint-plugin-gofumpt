@@ -15,11 +15,8 @@ import (
 
 func main() {}
 
-const sharedBufferSize = 8 << 20
-
 var (
-	sharedBuffer [sharedBufferSize]byte
-	sharedLength uint32
+	sharedBytes []byte
 
 	formattedText []byte
 	errorText     string
@@ -40,35 +37,28 @@ type configDiagnostic struct {
 }
 
 func setSharedBytes(data []byte) uint32 {
-	if len(data) > sharedBufferSize {
-		data = data[:sharedBufferSize]
-	}
-	sharedLength = uint32(copy(sharedBuffer[:], data))
-	return sharedLength
+	sharedBytes = data
+	return uint32(len(data))
 }
 
 func takeFromSharedBytes() []byte {
-	if sharedLength == 0 || sharedLength > sharedBufferSize {
-		return nil
-	}
-	result := make([]byte, sharedLength)
-	copy(result, sharedBuffer[:sharedLength])
-	sharedLength = 0
+	result := sharedBytes
+	sharedBytes = nil
 	return result
 }
 
 //go:wasmexport get_shared_bytes_ptr
 func get_shared_bytes_ptr() uint32 {
-	return uint32(uintptr(unsafe.Pointer(&sharedBuffer[0])))
+	if len(sharedBytes) == 0 {
+		return 0
+	}
+	return uint32(uintptr(unsafe.Pointer(&sharedBytes[0])))
 }
 
 //go:wasmexport clear_shared_bytes
 func clear_shared_bytes(size uint32) uint32 {
-	if size > sharedBufferSize {
-		size = sharedBufferSize
-	}
-	sharedLength = size
-	return uint32(uintptr(unsafe.Pointer(&sharedBuffer[0])))
+	sharedBytes = make([]byte, size)
+	return uint32(uintptr(unsafe.Pointer(&sharedBytes[0])))
 }
 
 //go:wasmexport dprint_plugin_version_4
