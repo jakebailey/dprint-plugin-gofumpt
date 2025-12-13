@@ -66,7 +66,7 @@ func dprint_plugin_version_4() uint32 {
 	return 4
 }
 
-//go:embed THIRD_PARTY_LICENSES
+//go:embed licenses/LICENSES
 var licenseText string
 
 //go:wasmexport get_license_text
