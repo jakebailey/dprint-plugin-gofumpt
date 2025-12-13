@@ -86,12 +86,12 @@ func get_plugin_info() uint32 {
 		ConfigSchemaURL string   `json:"configSchemaUrl"`
 	}{
 		Name:            "dprint-plugin-gofumpt",
-		Version:         "0.1.0",
+		Version:         "0.0.1",
 		ConfigKey:       "gofumpt",
 		FileExtensions:  []string{"go"},
 		FileNames:       []string{},
 		HelpURL:         "https://github.com/jakebailey/dprint-plugin-gofumpt",
-		ConfigSchemaURL: "", // TODO
+		ConfigSchemaURL: "https://plugins.dprint.dev/jakebailey/gofumpt/v0.0.1/schema.json",
 	}
 	data, _ := json.Marshal(info)
 	return setSharedBytes(data)
