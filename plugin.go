@@ -74,6 +74,8 @@ func get_license_text() uint32 {
 	return setSharedBytes([]byte(licenseText))
 }
 
+const version = "0.0.1"
+
 //go:wasmexport get_plugin_info
 func get_plugin_info() uint32 {
 	info := struct {
@@ -86,12 +88,12 @@ func get_plugin_info() uint32 {
 		ConfigSchemaURL string   `json:"configSchemaUrl"`
 	}{
 		Name:            "dprint-plugin-gofumpt",
-		Version:         "0.0.1",
+		Version:         version,
 		ConfigKey:       "gofumpt",
 		FileExtensions:  []string{"go"},
 		FileNames:       []string{},
 		HelpURL:         "https://github.com/jakebailey/dprint-plugin-gofumpt",
-		ConfigSchemaURL: "https://plugins.dprint.dev/jakebailey/gofumpt/v0.0.1/schema.json",
+		ConfigSchemaURL: "https://plugins.dprint.dev/jakebailey/gofumpt/v"+version+"/schema.json",
 	}
 	data, _ := json.Marshal(info)
 	return setSharedBytes(data)
