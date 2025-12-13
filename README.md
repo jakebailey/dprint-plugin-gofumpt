@@ -3,9 +3,6 @@
 A [dprint](https://dprint.dev/) plugin for formatting Go code using
 [gofumpt](https://github.com/mvdan/gofumpt).
 
-gofumpt is a stricter gofmt—it applies a superset of `gofmt` formatting rules to
-enforce a more consistent style.
-
 ## Getting Started
 
 Run the command below to add the plugin:
