@@ -17,6 +17,7 @@ After adding the plugin, configure the plugin in `dprint.json`:
 {
     // ...
     "gofumpt": {
+        // Copy these from your go.mod file!
         "langVersion": "go1.24",
         "modulePath": "github.com/myorg/myproject"
     },
