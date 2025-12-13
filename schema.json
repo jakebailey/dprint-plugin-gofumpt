@@ -2,20 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://plugins.dprint.dev/jakebailey/gofumpt/v0.0.1/schema.json",
   "title": "Config",
-  "description": "Configuration for dprint-plugin-gofumpt.",
+  "description": "Configuration for dprint-plugin-gofumpt. It is recommended to set both langVersion and modulePath for consistent formatting results.",
   "type": "object",
   "properties": {
     "langVersion": {
-      "description": "The Go language version to target (e.g., \"go1.24\", \"go1.25\"). Must start with \"go\" prefix. If empty, defaults to \"go1\".",
+      "description": "The Go language version to target (e.g., \"go1.24\", \"go1.25\"). Must start with \"go\" prefix. If empty, defaults to \"go1\". Recommended to set explicitly.",
       "type": "string",
       "default": "",
       "pattern": "^(go(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*))?(\\.(0|[1-9][0-9]*)|[a-z]+(0|[1-9][0-9]*)?)?)?$",
       "examples": ["go1", "go1.24", "go1.25", "go1.24.1", "go1.25rc1", "go1.25beta2"]
     },
     "modulePath": {
-      "description": "The module path of the package being formatted. Used for import sorting. If empty, gofumpt will try to infer it from the go.mod file.",
+      "description": "The module path of the package being formatted. Used for import sorting. Recommended to set explicitly.",
       "type": "string",
-      "default": ""
+      "default": "",
+      "examples": ["github.com/example/myproject"]
     },
     "extraRules": {
       "description": "Enable extra formatting rules beyond the default gofumpt rules. These rules are stricter but may not be desired in all projects.",
