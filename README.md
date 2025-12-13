@@ -32,11 +32,11 @@ After adding the plugin, configure the plugin in `dprint.json`:
 It is recommended to set both `langVersion` and `modulePath` for consistent
 formatting results, as the plugin cannot infer this information from `go.mod`.
 
-| Property      | Type      | Default | Description                                                                                                     |
-| ------------- | --------- | ------- | --------------------------------------------------------------------------------------------------------------- |
-| `langVersion` | `string`  | `""`    | The Go language version to target (e.g., `"go1.24"`). Must start with `go` prefix. If empty, defaults to `go1`. |
-| `modulePath`  | `string`  | `""`    | The module path of the package being formatted. Used for import sorting.                                        |
-| `extraRules`  | `boolean` | `false` | Enable extra formatting rules beyond the default gofumpt rules.                                                 |
+| Property      | Type      | Default | Description                                                                                                                                                    |
+| ------------- | --------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `langVersion` | `string`  | `""`    | The Go language version to target (e.g., `"go1.24"`). Must be a valid [Go version string](https://pkg.go.dev/go/version#IsValid). If empty, defaults to `go1`. |
+| `modulePath`  | `string`  | `""`    | The module path of the package being formatted. Used for import sorting.                                                                                       |
+| `extraRules`  | `boolean` | `false` | Enable extra formatting rules beyond the default gofumpt rules.                                                                                                |
 
 ## Versions
 
