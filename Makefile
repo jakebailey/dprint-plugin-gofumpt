@@ -1,4 +1,4 @@
-.PHONY: build clean test test-dprint vendor
+.PHONY: build clean test test-dprint vendor licenses
 
 WASM_FILE = plugin.wasm
 
@@ -20,3 +20,15 @@ vendor:
 	go mod vendor
 	@# Comment out goroutine calls from go-cmp (required for -scheduler=none)
 	sed -i 's/go detectRaces/\/\/ go detectRaces/' vendor/github.com/google/go-cmp/cmp/compare.go
+
+LICENSES_FILE = THIRD_PARTY_LICENSES
+
+licenses:
+	@echo "Generating combined license file..."
+	@cp LICENSE $(LICENSES_FILE)
+	@echo "" >> $(LICENSES_FILE)
+	@echo "================================================================================" >> $(LICENSES_FILE)
+	@echo "THIRD PARTY LICENSES" >> $(LICENSES_FILE)
+	@echo "================================================================================" >> $(LICENSES_FILE)
+	@GOFLAGS="-tags=tinygo -mod=mod" go run github.com/google/go-licenses/v2@latest report . --ignore=github.com/jakebailey/dprint-plugin-gofumpt --template=licenses.tpl 2>/dev/null >> $(LICENSES_FILE)
+	@echo "Generated $(LICENSES_FILE)"
