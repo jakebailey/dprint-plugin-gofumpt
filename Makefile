@@ -17,11 +17,6 @@ test: build
 	dprint clear-cache
 	cd testdata/basic && cp input.go.txt test.go && dprint fmt --log-level=debug --incremental=false && diff -u expected.go test.go && rm test.go
 
-vendor:
-	go mod vendor
-	@# Comment out goroutine calls from go-cmp (required for -scheduler=none)
-	sed -i 's/go detectRaces/\/\/ go detectRaces/' vendor/github.com/google/go-cmp/cmp/compare.go
-
 LICENSES_FILE = licenses/LICENSES
 
 licenses:

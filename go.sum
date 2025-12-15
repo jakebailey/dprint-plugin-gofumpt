@@ -10,5 +10,5 @@ github.com/rogpeppe/go-internal v1.14.1 h1:UQB4HGPB6osV0SQTLymcB4TgvyWu6ZyliaW0t
 github.com/rogpeppe/go-internal v1.14.1/go.mod h1:MaRKkUm5W0goXpeCfT7UZI6fk/L7L7so1lCWt35ZSgc=
 golang.org/x/tools v0.38.0 h1:Hx2Xv8hISq8Lm16jvBZ2VQf+RLmbd7wVUsALibYI/IQ=
 golang.org/x/tools v0.38.0/go.mod h1:yEsQ/d/YK8cjh0L6rZlY8tgtlKiBNTL14pGDJPJpYQs=
-mvdan.cc/gofumpt v0.9.2 h1:zsEMWL8SVKGHNztrx6uZrXdp7AX8r421Vvp23sz7ik4=
-mvdan.cc/gofumpt v0.9.2/go.mod h1:iB7Hn+ai8lPvofHd9ZFGVg2GOr8sBUw1QUWjNbmIL/s=
+mvdan.cc/gofumpt v0.9.3-0.20251215221355-d3e4b13ef7fa h1:nPwoM9gBmTkm2BS+wKrb+H6YTv04mwLd3PMKpRgvpqM=
+mvdan.cc/gofumpt v0.9.3-0.20251215221355-d3e4b13ef7fa/go.mod h1:BE0ZhSO/5A51ogFqdcrtWoS5HsGIajK7RFTKeFgVaYk=
