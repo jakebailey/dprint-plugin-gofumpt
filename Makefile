@@ -1,6 +1,7 @@
-.PHONY: build clean test test-dprint vendor licenses
+.PHONY: build clean test test-dprint vendor licenses docker-build
 
 WASM_FILE = plugin.wasm
+DOCKER_IMAGE = dprint-plugin-gofumpt-builder
 
 build:
 	tinygo build -o $(WASM_FILE).tmp -target=wasm-unknown -scheduler=none -no-debug -opt=2 .
@@ -33,3 +34,7 @@ licenses:
 	@echo "================================================================================" >> $(LICENSES_FILE)
 	@GOFLAGS="-tags=tinygo -mod=mod" go run github.com/google/go-licenses/v2@latest report . --ignore=github.com/jakebailey/dprint-plugin-gofumpt --template=licenses/licenses.tpl 2>/dev/null >> $(LICENSES_FILE)
 	@echo "Generated $(LICENSES_FILE)"
+
+docker-build:
+	docker build -t $(DOCKER_IMAGE) .
+	docker run --rm -v "$$(pwd)":/workspace $(DOCKER_IMAGE)
