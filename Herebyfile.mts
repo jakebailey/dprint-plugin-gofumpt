@@ -137,30 +137,27 @@ const WASM_FILE = "plugin.wasm";
 const TINYGO_VERSION = "0.40.0";
 const DOCKER_IMAGE = `tinygo/tinygo:${TINYGO_VERSION}`;
 
-async function patchWasm(wasmFile: string) {
-    const wasmBinary = await fs.promises.readFile(wasmFile);
+async function patchWasm(wasmBinary: Uint8Array) {
     const module = binaryen.readBinary(wasmBinary);
 
     // Set _initialize as the start function
     module.setStart(module.getFunction("_initialize"));
 
     const output = module.emitBinary();
-    await fs.promises.writeFile(wasmFile, output);
+    await fs.promises.writeFile(WASM_FILE, output);
     module.dispose();
 }
 
 const tinygoArgs = [
     "build",
-    "-o",
-    WASM_FILE,
     "-target=wasm-unknown",
     "-scheduler=none",
     "-no-debug",
     "-opt=2",
-    ".",
 ];
 
 async function runBuild(useDocker: boolean) {
+    let wasmBinary: Uint8Array;
     if (useDocker) {
         /* dprint-ignore-start */
         const dockerArgs = [
@@ -168,22 +165,20 @@ async function runBuild(useDocker: boolean) {
             "--rm",
             "-v", `${process.cwd()}:/src`,
             "-w", "/src",
-            "-u", `${process.getuid!()}:${process.getgid!()}`,
-            "--tmpfs", "/tmp/go-cache",
-            "--tmpfs", "/tmp/go",
-            "-e", "GOCACHE=/tmp/go-cache",
-            "-e", "GOPATH=/tmp/go",
             "-e", "GOFLAGS=-buildvcs=false",
             DOCKER_IMAGE,
             "tinygo",
             ...tinygoArgs,
+            "-o", "/dev/stdout",
         ];
         /* dprint-ignore-end */
-        await $`docker ${dockerArgs}`;
+        const { stdout } = await $pipe({ encoding: "buffer" })`docker ${dockerArgs}`;
+        wasmBinary = stdout;
     } else {
-        await $`tinygo ${tinygoArgs}`;
+        await $`tinygo ${tinygoArgs} -o ${WASM_FILE}`;
+        wasmBinary = await fs.promises.readFile(WASM_FILE);
     }
-    await patchWasm(WASM_FILE);
+    await patchWasm(wasmBinary);
 }
 
 export const build = task({
