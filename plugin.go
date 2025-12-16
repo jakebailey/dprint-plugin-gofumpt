@@ -8,6 +8,7 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
+	"strings"
 	"unsafe"
 
 	gofumpt "mvdan.cc/gofumpt/format"
@@ -70,7 +71,9 @@ func dprint_plugin_version_4() uint32 {
 var licenseText string
 
 //go:embed metadata/VERSION
-var version string
+var rawVersion string
+
+var version = strings.TrimSpace(rawVersion)
 
 //go:wasmexport get_license_text
 func get_license_text() uint32 {

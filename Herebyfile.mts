@@ -40,7 +40,7 @@ async function generateVersion() {
     const packageJson = JSON.parse(await fs.promises.readFile("package.json", "utf8"));
     const version: string = packageJson.version;
     const versionFile = path.join(metadataDir, "VERSION");
-    await writeIfChanged(versionFile, version);
+    await writeIfChanged(versionFile, version + "\n");
     return version;
 }
 
