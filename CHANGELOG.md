@@ -1,5 +1,11 @@
 # dprint-plugin-gofumpt
 
+## 0.0.3
+
+### Patch Changes
+
+- d0984be: Make releasing work
+
 ## 0.0.2
 
 ### Patch Changes

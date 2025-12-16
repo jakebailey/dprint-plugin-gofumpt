@@ -1,6 +1,6 @@
 {
     "name": "dprint-plugin-gofumpt",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "private": true,
     "scripts": {
         "version": "changeset version && hereby metadata"
