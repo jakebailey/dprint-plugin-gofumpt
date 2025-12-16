@@ -3,6 +3,11 @@
     "lineWidth": 120,
     "newLineKind": "auto",
     "useTabs": false,
+    "typescript": {
+        "quoteStyle": "preferDouble",
+        "semiColons": "always",
+        "arrowFunction.useParentheses": "force"
+    },
     "json": {
         "trailingCommas": "never"
     },
@@ -15,10 +20,13 @@
         "quotes": "preferSingle"
     },
     "excludes": [
+        "**/node_modules",
         "**/*-lock.json",
+        "pnpm-lock.yaml",
         "testdata/**"
     ],
     "plugins": [
+        "https://plugins.dprint.dev/typescript-0.95.13.wasm",
         "https://plugins.dprint.dev/json-0.21.0.wasm",
         "https://plugins.dprint.dev/markdown-0.20.0.wasm",
         "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm"
