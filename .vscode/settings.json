@@ -23,6 +23,10 @@
         "editor.defaultFormatter": "dprint.dprint",
         "editor.formatOnSave": true
     },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "dprint.dprint",
+        "editor.formatOnSave": true
+    },
     "gopls": {
         "ui.diagnostic.analyses": {
             "unusedfunc": false

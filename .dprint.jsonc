@@ -23,7 +23,8 @@
         "**/node_modules",
         "**/*-lock.json",
         "pnpm-lock.yaml",
-        "testdata/**"
+        "testdata/**",
+        ".changeset/**/*.md"
     ],
     "plugins": [
         "https://plugins.dprint.dev/typescript-0.95.13.wasm",

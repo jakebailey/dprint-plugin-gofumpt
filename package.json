@@ -2,7 +2,11 @@
     "name": "dprint-plugin-gofumpt",
     "version": "0.0.1",
     "private": true,
+    "scripts": {
+        "version": "changeset version && hereby metadata"
+    },
     "devDependencies": {
+        "@changesets/cli": "^2.29.8",
         "@types/node": "^25.0.2",
         "@types/tmp": "^0.2.6",
         "binaryen": "^125.0.0",
