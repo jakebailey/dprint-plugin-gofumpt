@@ -41,8 +41,17 @@ jobs:
         with:
           go-version: stable
 
+      - name: Capture new release version
+        id: version
+        run: |
+          pnpm changeset version
+          echo "version=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
+          git restore .
+
       - uses: changesets/action@e0145edc7d9d8679003495b11f87bd8ef63c0cba # v1.5.3
         with:
+          title: 'Release v${{ steps.version.outputs.version }}'
+          commit: 'Release v${{ steps.version.outputs.version }}'
           version: pnpm run version
           publish: pnpm changeset tag
         env:
