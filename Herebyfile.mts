@@ -162,7 +162,7 @@ const tinygoArgs = [
 
 async function runBuild(useDocker: boolean) {
     if (useDocker) {
-        await $`docker run --rm -v ${process.cwd()}:/src -w /src ${DOCKER_IMAGE} tinygo ${tinygoArgs}`;
+        await $`docker run --rm -v ${process.cwd()}:/src -w /src -e GOFLAGS=-buildvcs=false ${DOCKER_IMAGE} tinygo ${tinygoArgs}`;
     } else {
         await $`tinygo ${tinygoArgs}`;
     }
