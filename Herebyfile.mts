@@ -162,9 +162,24 @@ const tinygoArgs = [
 
 async function runBuild(useDocker: boolean) {
     if (useDocker) {
-        await $`docker run --rm -v ${process.cwd()}:/src -w /src -u ${process.getuid!()}:${
-            process.getgid!()
-        } -e GOFLAGS=-buildvcs=false ${DOCKER_IMAGE} tinygo ${tinygoArgs}`;
+        /* dprint-ignore-start */
+        const dockerArgs = [
+            "run",
+            "--rm",
+            "-v", `${process.cwd()}:/src`,
+            "-w", "/src",
+            "-u", `${process.getuid!()}:${process.getgid!()}`,
+            "--tmpfs", "/tmp/go-cache",
+            "--tmpfs", "/tmp/go",
+            "-e", "GOCACHE=/tmp/go-cache",
+            "-e", "GOPATH=/tmp/go",
+            "-e", "GOFLAGS=-buildvcs=false",
+            DOCKER_IMAGE,
+            "tinygo",
+            ...tinygoArgs,
+        ];
+        /* dprint-ignore-end */
+        await $`docker ${dockerArgs}`;
     } else {
         await $`tinygo ${tinygoArgs}`;
     }
