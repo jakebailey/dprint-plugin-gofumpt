@@ -134,9 +134,8 @@ export const metadata = task({
 });
 
 const WASM_FILE = "plugin.wasm";
-const DOCKER_IMAGE = "dprint-plugin-gofumpt-builder";
-const GO_VERSION = "1.25.5";
 const TINYGO_VERSION = "0.40.0";
+const DOCKER_IMAGE = `tinygo/tinygo:${TINYGO_VERSION}`;
 
 async function patchWasm(wasmFile: string) {
     const wasmBinary = await fs.promises.readFile(wasmFile);
@@ -163,7 +162,7 @@ const tinygoArgs = [
 
 async function runBuild(useDocker: boolean) {
     if (useDocker) {
-        await $`docker run --rm -v ${process.cwd()}:/workspace ${DOCKER_IMAGE} tinygo ${tinygoArgs}`;
+        await $`docker run --rm -v ${process.cwd()}:/src -w /src ${DOCKER_IMAGE} tinygo ${tinygoArgs}`;
     } else {
         await $`tinygo ${tinygoArgs}`;
     }
@@ -175,9 +174,6 @@ export const build = task({
     description: "Builds the WASM plugin. Use --docker to build via Docker.",
     dependencies: [metadata],
     run: async () => {
-        if (options.docker) {
-            await $`docker build --build-arg GO_VERSION=${GO_VERSION} --build-arg TINYGO_VERSION=${TINYGO_VERSION} -t ${DOCKER_IMAGE} .`;
-        }
         await runBuild(!!options.docker);
     },
 });
