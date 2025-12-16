@@ -26,7 +26,7 @@ jobs:
         with:
           go-version: stable
 
-      - run: pnpm hereby test --docker
+      - run: pnpm hereby test
 
       - run: git add .
       - run: git diff --staged --exit-code

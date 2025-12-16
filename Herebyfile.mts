@@ -13,10 +13,11 @@ const $pipe = _$({ verbose: "short" });
 const { values: options } = parseArgs({
     args: process.argv.slice(2),
     options: {
-        docker: { type: "boolean" },
+        docker: { type: "boolean", default: true },
     },
     strict: false,
     allowPositionals: true,
+    allowNegative: true,
 });
 
 const metadataDir = "metadata";
@@ -183,7 +184,7 @@ async function runBuild(useDocker: boolean) {
 
 export const build = task({
     name: "build",
-    description: "Builds the WASM plugin. Use --docker to build via Docker.",
+    description: "Builds the WASM plugin. Use --no-docker to build locally.",
     dependencies: [metadata],
     run: async () => {
         await runBuild(!!options.docker);
