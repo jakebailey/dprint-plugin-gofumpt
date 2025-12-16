@@ -1,8 +1,11 @@
 name: Release
 
+# We trigger on pushes to tags, since they are pushed with a deploy key
+# in the changesets workflow in order to bypass GHA token restrictions.
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 permissions: read-all
 
@@ -45,6 +48,15 @@ jobs:
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: artifact
+      - name: Wait for release to exist
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_PAGER: ''
+        run: |
+          until gh release view "${{ github.ref_name }}" --repo "${{ github.repository }}"; do
+            echo "Waiting for release ${{ github.ref_name }} to be created..."
+            sleep 5
+          done
       - uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
           files: |
