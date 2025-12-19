@@ -112,7 +112,7 @@ THIRD PARTY LICENSES
 
     const { stdout } = await $pipe({
         env: { GOFLAGS: "-tags=tinygo" },
-    })`go run github.com/google/go-licenses/v2@latest report . --ignore=${moduleName} --template=${templateFile.name}`;
+    })`go tool go-licenses report . --ignore=${moduleName} --template=${templateFile.name}`;
 
     templateFile.removeCallback();
 
