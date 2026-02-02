@@ -1,5 +1,11 @@
 # dprint-plugin-gofumpt
 
+## 0.0.4
+
+### Patch Changes
+
+- 684ee6e: Add update URL to plugin info
+
 ## 0.0.3
 
 ### Patch Changes
