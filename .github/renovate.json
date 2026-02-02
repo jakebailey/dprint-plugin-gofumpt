@@ -8,16 +8,12 @@
     "packageRules": [
         {
             "matchManagers": ["github-actions"],
+            "matchPackageNames": ["!actions/node-versions"],
             "groupName": "github actions",
             "groupSlug": "github-actions"
         },
         {
             "matchPackageNames": ["node", "@types/node", "pnpm", "go"],
-            "enabled": false
-        },
-        {
-            "matchDepTypes": ["uses-with"],
-            "matchPackageNames": ["node"],
             "enabled": false
         }
     ]
