@@ -5,6 +5,16 @@
         "helpers:pinGitHubActionDigests"
     ],
     "rangeStrategy": "bump",
+    "customManagers": [
+        {
+            "customType": "regex",
+            "managerFilePatterns": ["Herebyfile.mts"],
+            "matchStrings": [
+                "// renovate: datasource=(?<datasource>[a-zA-Z0-9-._]+?) depName=(?<depName>[^\\s]+?)\\n(?:const|let|var)\\s+[A-Za-z0-9_]+?_VERSION\\s*=\\s*\"(?<currentValue>.+?)\""
+            ],
+            "extractVersionTemplate": "^v(?<version>.*)$"
+        }
+    ],
     "packageRules": [
         {
             "matchManagers": ["github-actions"],
