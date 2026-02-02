@@ -4,5 +4,12 @@
         "config:recommended",
         "helpers:pinGitHubActionDigests"
     ],
-    "rangeStrategy": "bump"
+    "rangeStrategy": "bump",
+    "packageRules": [
+        {
+            "matchManagers": ["github-actions"],
+            "groupName": "github actions",
+            "groupSlug": "github-actions"
+        }
+    ]
 }
