@@ -1,5 +1,12 @@
 # dprint-plugin-gofumpt
 
+## 0.0.5
+
+### Patch Changes
+
+- 74cb6e5: Prevent crashes on empty inputs
+- 21f5fb1: Update to tinygo 0.40.1
+
 ## 0.0.4
 
 ### Patch Changes
