@@ -192,25 +192,35 @@ export const build = task({
     },
 });
 
+async function runTest(testName: string) {
+    const cacheDir = tmp.dirSync({ unsafeCleanup: true });
+    const testDir = path.join("testdata", testName);
+    await fs.promises.copyFile(path.join(testDir, "input.go.txt"), path.join(testDir, "test.go"));
+    try {
+        await $({
+            cwd: testDir,
+            env: { DPRINT_CACHE_DIR: cacheDir.name },
+        })`dprint fmt --log-level=debug --incremental=false`;
+        const expected = await fs.promises.readFile(path.join(testDir, "expected.go"), "utf8");
+        const actual = await fs.promises.readFile(path.join(testDir, "test.go"), "utf8");
+        assert.strictEqual(actual, expected, `Formatted output does not match expected for test "${testName}"`);
+    } finally {
+        await fs.promises.rm(path.join(testDir, "test.go"), { force: true });
+        cacheDir.removeCallback();
+    }
+}
+
 export const test = task({
     name: "test",
     description: "Builds and runs tests.",
     dependencies: [build],
     run: async () => {
-        const cacheDir = tmp.dirSync({ unsafeCleanup: true });
-        const testDir = path.join("testdata", "basic");
-        await fs.promises.copyFile(path.join(testDir, "input.go.txt"), path.join(testDir, "test.go"));
-        try {
-            await $({
-                cwd: testDir,
-                env: { DPRINT_CACHE_DIR: cacheDir.name },
-            })`dprint fmt --log-level=debug --incremental=false`;
-            const expected = await fs.promises.readFile(path.join(testDir, "expected.go"), "utf8");
-            const actual = await fs.promises.readFile(path.join(testDir, "test.go"), "utf8");
-            assert.strictEqual(actual, expected, "Formatted output does not match expected");
-        } finally {
-            await fs.promises.rm(path.join(testDir, "test.go"), { force: true });
-            cacheDir.removeCallback();
+        const testDirs = await fs.promises.readdir("testdata");
+        for (const testName of testDirs) {
+            const stat = await fs.promises.stat(path.join("testdata", testName));
+            if (!stat.isDirectory()) continue;
+            console.log(`Running test: ${testName}`);
+            await runTest(testName);
         }
     },
 });

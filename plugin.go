@@ -58,6 +58,10 @@ func get_shared_bytes_ptr() uint32 {
 
 //go:wasmexport clear_shared_bytes
 func clear_shared_bytes(size uint32) uint32 {
+	if size == 0 {
+		sharedBytes = nil
+		return 0
+	}
 	sharedBytes = make([]byte, size)
 	return uint32(uintptr(unsafe.Pointer(&sharedBytes[0])))
 }
@@ -163,7 +167,7 @@ func set_override_config() {}
 //go:wasmexport format
 func format(_ uint32) uint32 {
 	input := takeFromSharedBytes()
-	if input == nil {
+	if len(input) == 0 {
 		return 0
 	}
 
