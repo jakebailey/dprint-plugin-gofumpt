@@ -1,5 +1,11 @@
 # dprint-plugin-gofumpt
 
+## 0.0.6
+
+### Patch Changes
+
+- ae2baf3: Implement check_config_updates to prevent crash on update
+
 ## 0.0.5
 
 ### Patch Changes
