@@ -161,7 +161,7 @@ func get_config_file_matching(_ uint32) uint32 {
 //go:wasmexport check_config_updates
 func check_config_updates() uint32 {
 	_ = takeFromSharedBytes()
-	return setSharedBytes([]byte(`{"ok":[]}`))
+	return setSharedBytes([]byte(`{"kind":"ok","data":[]}`))
 }
 
 //go:wasmexport set_file_path
