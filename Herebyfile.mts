@@ -111,7 +111,7 @@ THIRD PARTY LICENSES
     await fs.promises.writeFile(templateFile.name, template);
 
     const { stdout } = await $pipe({
-        env: { GOFLAGS: "-tags=tinygo" },
+        env: { GOFLAGS: "-tags=tinygo -mod=mod" },
     })`go tool go-licenses report . --ignore=${moduleName} --template=${templateFile.name}`;
 
     templateFile.removeCallback();
