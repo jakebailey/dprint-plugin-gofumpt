@@ -9,6 +9,7 @@ import tmp from "tmp";
 
 const $ = _$({ verbose: "short", stdio: "inherit" });
 const $pipe = _$({ verbose: "short" });
+const $quiet = _$({});
 
 const { values: options } = parseArgs({
     args: process.argv.slice(2),
@@ -111,8 +112,8 @@ THIRD PARTY LICENSES
     await fs.promises.writeFile(templateFile.name, template);
 
     const { stdout } = await $pipe({
-        env: { GOFLAGS: "-tags=tinygo" },
-    })`go tool go-licenses report . --ignore=${moduleName} --template=${templateFile.name}`;
+        env: { GOFLAGS: "-tags=tinygo -mod=mod" },
+    })`go run github.com/google/go-licenses/v2@v2.0.1 report . --ignore=${moduleName} --template=${templateFile.name}`;
 
     templateFile.removeCallback();
 
@@ -197,16 +198,233 @@ async function runTest(testName: string) {
     const testDir = path.join("testdata", testName);
     await fs.promises.copyFile(path.join(testDir, "input.go.txt"), path.join(testDir, "test.go"));
     try {
-        await $({
+        const result = await $quiet({
             cwd: testDir,
             env: { DPRINT_CACHE_DIR: cacheDir.name },
+            all: true,
         })`dprint fmt --log-level=debug --incremental=false`;
-        const expected = await fs.promises.readFile(path.join(testDir, "expected.go"), "utf8");
-        const actual = await fs.promises.readFile(path.join(testDir, "test.go"), "utf8");
-        assert.strictEqual(actual, expected, `Formatted output does not match expected for test "${testName}"`);
+        try {
+            const expected = await fs.promises.readFile(path.join(testDir, "expected.go"), "utf8");
+            const actual = await fs.promises.readFile(path.join(testDir, "test.go"), "utf8");
+            assert.strictEqual(actual, expected, `Formatted output does not match expected for test "${testName}"`);
+        } catch (e) {
+            process.stderr.write(result.all ?? "");
+            throw e;
+        }
     } finally {
         await fs.promises.rm(path.join(testDir, "test.go"), { force: true });
         cacheDir.removeCallback();
+    }
+}
+
+// txtar format: https://pkg.go.dev/golang.org/x/tools/txtar
+// Comment lines at the top, then files separated by "-- filename --" markers.
+interface TxtarFile {
+    name: string;
+    data: string;
+}
+
+interface TxtarArchive {
+    comment: string;
+    files: TxtarFile[];
+}
+
+function parseTxtar(content: string): TxtarArchive {
+    const files: TxtarFile[] = [];
+    const commentLines: string[] = [];
+    let currentFileName: string | null = null;
+    let currentDataLines: string[] = [];
+    const fileMarker = /^-- (.+) --$/;
+
+    for (const line of content.split("\n")) {
+        const match = line.match(fileMarker);
+        if (match) {
+            if (currentFileName !== null) {
+                // The \n before the marker belongs to the previous file's data
+                files.push({ name: currentFileName, data: currentDataLines.join("\n") + "\n" });
+            }
+            currentFileName = match[1];
+            currentDataLines = [];
+        } else if (currentFileName !== null) {
+            currentDataLines.push(line);
+        } else {
+            commentLines.push(line);
+        }
+    }
+    if (currentFileName !== null) {
+        // Last file: trailing \n already represented by empty string in split
+        files.push({ name: currentFileName, data: currentDataLines.join("\n") });
+    }
+
+    return { comment: commentLines.join("\n"), files };
+}
+
+interface GofumptTestCase {
+    inputFile: string;
+    goldenFile: string;
+    extra: boolean;
+    langVersion: string;
+}
+
+function parseGofumptTests(archive: TxtarArchive): GofumptTestCase[] {
+    const cases: GofumptTestCase[] = [];
+    const lines = archive.comment.split("\n");
+
+    // Track go.mod lang version mutations from `exec go mod edit -go=X`
+    const goMod = archive.files.find((f) => f.name === "go.mod");
+    const goDirective = goMod?.data.match(/^go\s+(\S+)/m);
+    let currentGoVersion = goDirective ? goDirective[1] : "";
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+
+        // Track: exec go mod edit -go=X
+        const goModEditMatch = line.match(/^exec go mod edit -go=(\S+)/);
+        if (goModEditMatch) {
+            currentGoVersion = goModEditMatch[1];
+            continue;
+        }
+
+        // Match: exec gofumpt [flags] -w foo.go [bar.go ...]
+        // or: exec gofumpt [flags] foo.go (stdout mode, next line: cmp stdout foo.go.golden)
+        const execMatch = line.match(/^exec gofumpt\s+(.*)$/);
+        if (!execMatch) continue;
+
+        const args = execMatch[1].split(/\s+/);
+        const extra = args.includes("-extra");
+        const langArg = args.find((a) => a.startsWith("-lang="));
+        const langVersion = langArg ? langArg.replace("-lang=", "") : currentGoVersion ? "go" + currentGoVersion : "";
+
+        const isWrite = args.includes("-w");
+        const goFiles = args.filter((a) => a.endsWith(".go") && !a.endsWith(".golden"));
+
+        if (goFiles.length === 0) continue;
+
+        // Check for -d or -l only commands (idempotency checks, listing); skip them
+        if (args.includes("-d") || args.includes("-l")) continue;
+
+        if (isWrite) {
+            // Next line should be: cmp foo.go foo.go.golden
+            for (let j = i + 1; j < lines.length && j <= i + goFiles.length; j++) {
+                const cmpMatch = lines[j].trim().match(/^cmp\s+(\S+)\s+(\S+)$/);
+                if (cmpMatch) {
+                    cases.push({
+                        inputFile: cmpMatch[1],
+                        goldenFile: cmpMatch[2],
+                        extra,
+                        langVersion,
+                    });
+                }
+            }
+        } else {
+            // stdout mode: next line is cmp stdout foo.go.golden
+            const nextLine = lines[i + 1]?.trim();
+            const cmpMatch = nextLine?.match(/^cmp\s+stdout\s+(\S+)$/);
+            if (cmpMatch && goFiles.length === 1) {
+                cases.push({
+                    inputFile: goFiles[0],
+                    goldenFile: cmpMatch[1],
+                    extra,
+                    langVersion,
+                });
+            }
+        }
+    }
+
+    return cases;
+}
+
+async function getGofumptTestdataDir(): Promise<string> {
+    const { stdout } = await $pipe({
+        env: { GOFLAGS: "-tags=tinygo -mod=mod" },
+    })`go list -m -json mvdan.cc/gofumpt`;
+    const info = JSON.parse(stdout);
+    return path.join(info.Dir, "testdata", "script");
+}
+
+// Tests that are too complex or CLI-specific to run through the dprint plugin.
+const skippedTxtarTests = new Set([
+    "deprecated-flags", // Tests CLI flag deprecation warnings
+    "diagnose", // Tests gofumpt:diagnose comments
+    "diff", // Tests -d flag behavior
+    "gomod", // Tests go.mod edge cases with multiple modules
+    "ignore", // Tests vendor/testdata ignore behavior
+    "long-lines", // Tests GOFUMPT_SPLIT_LONG_LINES env var
+    "workspaces", // Tests go.work behavior
+]);
+
+async function runGofumptTxtarTest(txtarPath: string) {
+    const content = await fs.promises.readFile(txtarPath, "utf8");
+    const archive = parseTxtar(content);
+    const testCases = parseGofumptTests(archive);
+
+    if (testCases.length === 0) {
+        console.log(`  (no applicable test cases found, skipping)`);
+        return;
+    }
+
+    const fileMap = new Map(archive.files.map((f) => [f.name, f.data]));
+
+    for (const tc of testCases) {
+        const inputData = fileMap.get(tc.inputFile);
+        const goldenData = fileMap.get(tc.goldenFile);
+        if (!inputData || !goldenData) {
+            throw new Error(`Missing file in archive: ${tc.inputFile} or ${tc.goldenFile}`);
+        }
+
+        const testDir = tmp.dirSync({ unsafeCleanup: true });
+        const cacheDir = tmp.dirSync({ unsafeCleanup: true });
+        try {
+            const dprintConfig: Record<string, unknown> = {
+                $schema: "https://dprint.dev/schemas/v0.json",
+                gofumpt: {} as Record<string, unknown>,
+                includes: ["test.go"],
+                plugins: [path.resolve(WASM_FILE)],
+            };
+            const gofumptConfig = dprintConfig.gofumpt as Record<string, unknown>;
+            if (tc.extra) {
+                gofumptConfig.extraRules = true;
+            }
+            if (tc.langVersion) {
+                gofumptConfig.langVersion = tc.langVersion;
+            }
+
+            // If the archive has a go.mod, extract modulePath from it
+            const goMod = fileMap.get("go.mod");
+            if (goMod) {
+                const moduleDirective = goMod.match(/^module\s+(\S+)/m);
+                if (moduleDirective) {
+                    gofumptConfig.modulePath = moduleDirective[1];
+                }
+            }
+
+            await fs.promises.writeFile(
+                path.join(testDir.name, "dprint.json"),
+                JSON.stringify(dprintConfig),
+            );
+            await fs.promises.writeFile(path.join(testDir.name, "test.go"), inputData);
+
+            const result = await $quiet({
+                cwd: testDir.name,
+                env: { DPRINT_CACHE_DIR: cacheDir.name },
+                all: true,
+            })`dprint fmt --log-level=debug --incremental=false`;
+
+            try {
+                const actual = await fs.promises.readFile(path.join(testDir.name, "test.go"), "utf8");
+                assert.strictEqual(
+                    actual,
+                    goldenData,
+                    `Mismatch in ${path.basename(txtarPath)}: ${tc.inputFile} -> ${tc.goldenFile}`,
+                );
+            } catch (e) {
+                process.stderr.write(result.all ?? "");
+                throw e;
+            }
+        } finally {
+            testDir.removeCallback();
+            cacheDir.removeCallback();
+        }
     }
 }
 
@@ -222,5 +440,27 @@ export const test = task({
             console.log(`Running test: ${testName}`);
             await runTest(testName);
         }
+
+        console.log(`\nRunning gofumpt txtar tests...`);
+        const scriptDir = await getGofumptTestdataDir();
+        const entries = await fs.promises.readdir(scriptDir);
+        const txtarFiles = entries.filter((e) => e.endsWith(".txtar")).sort();
+
+        let passed = 0;
+        let skipped = 0;
+
+        for (const file of txtarFiles) {
+            const testName = file.replace(".txtar", "");
+            if (skippedTxtarTests.has(testName)) {
+                console.log(`Skipping: ${testName}`);
+                skipped++;
+                continue;
+            }
+            console.log(`Running: ${testName}`);
+            await runGofumptTxtarTest(path.join(scriptDir, file));
+            passed++;
+        }
+
+        console.log(`\nGofumpt tests: ${passed} passed, ${skipped} skipped`);
     },
 });
