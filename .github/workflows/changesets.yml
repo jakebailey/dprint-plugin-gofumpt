@@ -50,11 +50,9 @@ jobs:
           echo "version=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
           git restore .
 
-      - uses: changesets/action@c48e67d110a68bc90ccf1098e9646092baacaa87 # v1.6.0
+      - uses: changesets/action@6a0a831ff30acef54f2c6aa1cbbc1096b066edaf # v1.7.0
         with:
           title: 'Release v${{ steps.version.outputs.version }}'
           commit: 'Release v${{ steps.version.outputs.version }}'
           version: pnpm run version
           publish: pnpm changeset tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
