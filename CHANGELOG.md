@@ -1,5 +1,11 @@
 # dprint-plugin-gofumpt
 
+## 0.0.7
+
+### Patch Changes
+
+- d564e1e: Fix crash when simplifying declaration
+
 ## 0.0.6
 
 ### Patch Changes
