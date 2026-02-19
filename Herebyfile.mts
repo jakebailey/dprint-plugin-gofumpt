@@ -270,8 +270,21 @@ function parseGofumptTests(archive: TxtarArchive): GofumptTestCase[] {
     const cases: GofumptTestCase[] = [];
     const lines = archive.comment.split("\n");
 
+    // Track go.mod lang version mutations from `exec go mod edit -go=X`
+    const goMod = archive.files.find((f) => f.name === "go.mod");
+    const goDirective = goMod?.data.match(/^go\s+(\S+)/m);
+    let currentGoVersion = goDirective ? goDirective[1] : "";
+
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
+
+        // Track: exec go mod edit -go=X
+        const goModEditMatch = line.match(/^exec go mod edit -go=(\S+)/);
+        if (goModEditMatch) {
+            currentGoVersion = goModEditMatch[1];
+            continue;
+        }
+
         // Match: exec gofumpt [flags] -w foo.go [bar.go ...]
         // or: exec gofumpt [flags] foo.go (stdout mode, next line: cmp stdout foo.go.golden)
         const execMatch = line.match(/^exec gofumpt\s+(.*)$/);
@@ -280,7 +293,7 @@ function parseGofumptTests(archive: TxtarArchive): GofumptTestCase[] {
         const args = execMatch[1].split(/\s+/);
         const extra = args.includes("-extra");
         const langArg = args.find((a) => a.startsWith("-lang="));
-        const langVersion = langArg ? langArg.replace("-lang=", "") : "";
+        const langVersion = langArg ? langArg.replace("-lang=", "") : currentGoVersion ? "go" + currentGoVersion : "";
 
         const isWrite = args.includes("-w");
         const goFiles = args.filter((a) => a.endsWith(".go") && !a.endsWith(".golden"));
@@ -337,7 +350,6 @@ const skippedTxtarTests = new Set([
     "gomod", // Tests go.mod edge cases with multiple modules
     "ignore", // Tests vendor/testdata ignore behavior
     "long-lines", // Tests GOFUMPT_SPLIT_LONG_LINES env var
-    "octal-literals", // Tests -lang flag with directory walking
     "workspaces", // Tests go.work behavior
 ]);
 
@@ -377,15 +389,9 @@ async function runGofumptTxtarTest(txtarPath: string) {
                 gofumptConfig.langVersion = tc.langVersion;
             }
 
-            // If the archive has a go.mod, extract langVersion and modulePath from it
+            // If the archive has a go.mod, extract modulePath from it
             const goMod = fileMap.get("go.mod");
             if (goMod) {
-                if (!tc.langVersion) {
-                    const goDirective = goMod.match(/^go\s+(\S+)/m);
-                    if (goDirective) {
-                        gofumptConfig.langVersion = "go" + goDirective[1];
-                    }
-                }
                 const moduleDirective = goMod.match(/^module\s+(\S+)/m);
                 if (moduleDirective) {
                     gofumptConfig.modulePath = moduleDirective[1];
