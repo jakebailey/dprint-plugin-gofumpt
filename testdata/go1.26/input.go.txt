@@ -1,0 +1,6 @@
+package p
+
+func f() {
+	var x = 1
+	_ = x
+}
