@@ -2,4 +2,4 @@
 "dprint-plugin-gofumpt": patch
 ---
 
-Fix crash when simplfying declaration
+Fix crash when simplifying declaration
