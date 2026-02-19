@@ -105,7 +105,6 @@ func (c *Cursor) field() reflect.Value {
 	return reflect.Indirect(reflect.ValueOf(c.parent)).FieldByName(c.name)
 }
 
-
 // Replace replaces the current Node with n.
 // The replacement node is not walked by Apply.
 func (c *Cursor) Replace(n ast.Node) {
