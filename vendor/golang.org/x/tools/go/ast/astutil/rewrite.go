@@ -105,6 +105,7 @@ func (c *Cursor) field() reflect.Value {
 	return reflect.Indirect(reflect.ValueOf(c.parent)).FieldByName(c.name)
 }
 
+
 // Replace replaces the current Node with n.
 // The replacement node is not walked by Apply.
 func (c *Cursor) Replace(n ast.Node) {
@@ -117,6 +118,17 @@ func (c *Cursor) Replace(n ast.Node) {
 		return
 	}
 
+	if i := c.Index(); i >= 0 {
+		if replaceInSlice(c.parent, c.name, i, n) {
+			return
+		}
+	} else {
+		if replaceField(c.parent, c.name, n) {
+			return
+		}
+	}
+
+	// Fallback to reflect
 	v := c.field()
 	if i := c.Index(); i >= 0 {
 		v = v.Index(i)
@@ -124,6 +136,259 @@ func (c *Cursor) Replace(n ast.Node) {
 	v.Set(reflect.ValueOf(n))
 }
 
+// replaceInSlice replaces the i-th element of a named slice field in parent with n.
+// Returns true if handled.
+func replaceInSlice(parent ast.Node, name string, i int, n ast.Node) bool {
+	switch p := parent.(type) {
+	case *ast.BlockStmt:
+		if name == "List" {
+			p.List[i] = n.(ast.Stmt)
+			return true
+		}
+	case *ast.CaseClause:
+		switch name {
+		case "List":
+			p.List[i] = n.(ast.Expr)
+			return true
+		case "Body":
+			p.Body[i] = n.(ast.Stmt)
+			return true
+		}
+	case *ast.CommClause:
+		if name == "Body" {
+			p.Body[i] = n.(ast.Stmt)
+			return true
+		}
+	case *ast.FieldList:
+		if name == "List" {
+			p.List[i] = n.(*ast.Field)
+			return true
+		}
+	case *ast.GenDecl:
+		if name == "Specs" {
+			p.Specs[i] = n.(ast.Spec)
+			return true
+		}
+	case *ast.File:
+		if name == "Decls" {
+			p.Decls[i] = n.(ast.Decl)
+			return true
+		}
+	case *ast.CompositeLit:
+		if name == "Elts" {
+			p.Elts[i] = n.(ast.Expr)
+			return true
+		}
+	case *ast.CallExpr:
+		if name == "Args" {
+			p.Args[i] = n.(ast.Expr)
+			return true
+		}
+	case *ast.AssignStmt:
+		switch name {
+		case "Lhs":
+			p.Lhs[i] = n.(ast.Expr)
+			return true
+		case "Rhs":
+			p.Rhs[i] = n.(ast.Expr)
+			return true
+		}
+	case *ast.ReturnStmt:
+		if name == "Results" {
+			p.Results[i] = n.(ast.Expr)
+			return true
+		}
+	case *ast.ValueSpec:
+		switch name {
+		case "Names":
+			p.Names[i] = n.(*ast.Ident)
+			return true
+		case "Values":
+			p.Values[i] = n.(ast.Expr)
+			return true
+		}
+	case *ast.CommentGroup:
+		if name == "List" {
+			p.List[i] = n.(*ast.Comment)
+			return true
+		}
+	case *ast.Field:
+		if name == "Names" {
+			p.Names[i] = n.(*ast.Ident)
+			return true
+		}
+	}
+	return false
+}
+
+// replaceField replaces a named non-slice field in parent with n.
+// Returns true if handled.
+func replaceField(parent ast.Node, name string, n ast.Node) bool {
+	switch p := parent.(type) {
+	case *ast.DeclStmt:
+		if name == "Decl" {
+			p.Decl = n.(ast.Decl)
+			return true
+		}
+	case *ast.ExprStmt:
+		if name == "X" {
+			p.X = n.(ast.Expr)
+			return true
+		}
+	case *ast.ParenExpr:
+		if name == "X" {
+			p.X = n.(ast.Expr)
+			return true
+		}
+	case *ast.UnaryExpr:
+		if name == "X" {
+			p.X = n.(ast.Expr)
+			return true
+		}
+	case *ast.BinaryExpr:
+		switch name {
+		case "X":
+			p.X = n.(ast.Expr)
+			return true
+		case "Y":
+			p.Y = n.(ast.Expr)
+			return true
+		}
+	case *ast.IfStmt:
+		switch name {
+		case "Init":
+			p.Init = n.(ast.Stmt)
+			return true
+		case "Cond":
+			p.Cond = n.(ast.Expr)
+			return true
+		case "Else":
+			p.Else = n.(ast.Stmt)
+			return true
+		}
+	case *ast.ForStmt:
+		switch name {
+		case "Init":
+			p.Init = n.(ast.Stmt)
+			return true
+		case "Cond":
+			p.Cond = n.(ast.Expr)
+			return true
+		case "Post":
+			p.Post = n.(ast.Stmt)
+			return true
+		}
+	case *ast.RangeStmt:
+		switch name {
+		case "Key":
+			p.Key = n.(ast.Expr)
+			return true
+		case "Value":
+			p.Value = n.(ast.Expr)
+			return true
+		case "X":
+			p.X = n.(ast.Expr)
+			return true
+		}
+	case *ast.SwitchStmt:
+		switch name {
+		case "Init":
+			p.Init = n.(ast.Stmt)
+			return true
+		case "Tag":
+			p.Tag = n.(ast.Expr)
+			return true
+		}
+	case *ast.TypeSwitchStmt:
+		switch name {
+		case "Init":
+			p.Init = n.(ast.Stmt)
+			return true
+		case "Assign":
+			p.Assign = n.(ast.Stmt)
+			return true
+		}
+	case *ast.SendStmt:
+		switch name {
+		case "Chan":
+			p.Chan = n.(ast.Expr)
+			return true
+		case "Value":
+			p.Value = n.(ast.Expr)
+			return true
+		}
+	case *ast.KeyValueExpr:
+		switch name {
+		case "Key":
+			p.Key = n.(ast.Expr)
+			return true
+		case "Value":
+			p.Value = n.(ast.Expr)
+			return true
+		}
+	case *ast.StarExpr:
+		if name == "X" {
+			p.X = n.(ast.Expr)
+			return true
+		}
+	case *ast.SelectorExpr:
+		if name == "X" {
+			p.X = n.(ast.Expr)
+			return true
+		}
+	case *ast.IndexExpr:
+		switch name {
+		case "X":
+			p.X = n.(ast.Expr)
+			return true
+		case "Index":
+			p.Index = n.(ast.Expr)
+			return true
+		}
+	case *ast.SliceExpr:
+		switch name {
+		case "X":
+			p.X = n.(ast.Expr)
+			return true
+		case "Low":
+			p.Low = n.(ast.Expr)
+			return true
+		case "High":
+			p.High = n.(ast.Expr)
+			return true
+		case "Max":
+			p.Max = n.(ast.Expr)
+			return true
+		}
+	case *ast.TypeAssertExpr:
+		switch name {
+		case "X":
+			p.X = n.(ast.Expr)
+			return true
+		case "Type":
+			p.Type = n.(ast.Expr)
+			return true
+		}
+	case *ast.CallExpr:
+		if name == "Fun" {
+			p.Fun = n.(ast.Expr)
+			return true
+		}
+	case *ast.LabeledStmt:
+		if name == "Stmt" {
+			p.Stmt = n.(ast.Stmt)
+			return true
+		}
+	case *ast.CommClause:
+		if name == "Comm" {
+			p.Comm = n.(ast.Stmt)
+			return true
+		}
+	case *ast.BasicLit:
+		// BasicLit has no AST node children
+	}
+	return false
+}
 // Delete deletes the current Node from its containing slice.
 // If the current Node is not part of a slice, Delete panics.
 // As a special case, if the current node is a package file,
