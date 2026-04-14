@@ -61,7 +61,7 @@ async function generateSchema(version: string) {
                     + "Recommended to set explicitly.",
                 type: "string",
                 default: "",
-                pattern: "^(go(0|[1-9][0-9]*)(\\.( 0|[1-9][0-9]*))?(\\.( 0|[1-9][0-9]*)|[a-z]+(0|[1-9][0-9]*)?)?)?$",
+                pattern: "^(go(0|[1-9][0-9]*)(\\.((0|[1-9][0-9]*)))?(\\.((0|[1-9][0-9]*))|[a-z]+(0|[1-9][0-9]*)?)?)?$",
                 examples: ["go1", "go1.24", "go1.25", "go1.24.1", "go1.25rc1", "go1.25beta2"],
             },
             modulePath: {

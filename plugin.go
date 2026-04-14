@@ -8,6 +8,8 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
+	"fmt"
+	goversion "go/version"
 	"strings"
 	"unsafe"
 
@@ -130,6 +132,13 @@ func register_config(_ uint32) {
 		return
 	}
 	config = raw.Plugin
+
+	if config.LangVersion != "" && goversion.Lang(config.LangVersion) == "" {
+		diagnostics = append(diagnostics, configDiagnostic{
+			PropertyName: "langVersion",
+			Message:      fmt.Sprintf("invalid Go version: %q", config.LangVersion),
+		})
+	}
 }
 
 //go:wasmexport release_config
@@ -165,10 +174,14 @@ func check_config_updates() uint32 {
 }
 
 //go:wasmexport set_file_path
-func set_file_path() {}
+func set_file_path() {
+	_ = takeFromSharedBytes()
+}
 
 //go:wasmexport set_override_config
-func set_override_config() {}
+func set_override_config() {
+	_ = takeFromSharedBytes()
+}
 
 //go:wasmexport format
 func format(_ uint32) uint32 {
