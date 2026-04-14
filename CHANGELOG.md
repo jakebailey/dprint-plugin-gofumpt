@@ -1,5 +1,12 @@
 # dprint-plugin-gofumpt
 
+## 0.0.8
+
+### Patch Changes
+
+- 40810e1: Fix langVersion validation
+- fc11afb: Fix version example in README
+
 ## 0.0.7
 
 ### Patch Changes
