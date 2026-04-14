@@ -84,6 +84,16 @@ async function generateSchema(version: string) {
     await writeIfChanged(schemaFile, JSON.stringify(schema, null, 4) + "\n");
 }
 
+async function updateReadmeVersion(version: string) {
+    const readmePath = "README.md";
+    const readme = await fs.promises.readFile(readmePath, "utf8");
+    const updated = readme.replace(
+        /gofumpt-v[0-9]+\.[0-9]+\.[0-9]+\.wasm/g,
+        `gofumpt-v${version}.wasm`,
+    );
+    await writeIfChanged(readmePath, updated);
+}
+
 async function generateLicenses() {
     const license = await fs.promises.readFile("LICENSE", "utf8");
 
@@ -131,6 +141,7 @@ export const metadata = task({
         await Promise.all([
             generateSchema(version),
             generateLicenses(),
+            updateReadmeVersion(version),
         ]);
     },
 });
