@@ -138,6 +138,7 @@ func register_config(_ uint32) {
 			PropertyName: "langVersion",
 			Message:      fmt.Sprintf("invalid Go version: %q", config.LangVersion),
 		})
+		config.LangVersion = ""
 	}
 }
 
