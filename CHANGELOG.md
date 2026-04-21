@@ -1,5 +1,11 @@
 # dprint-plugin-gofumpt
 
+## 0.0.9
+
+### Patch Changes
+
+- 1d9f395: Update to tinygo 0.41, drop local patches
+
 ## 0.0.8
 
 ### Patch Changes
