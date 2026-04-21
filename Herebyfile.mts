@@ -151,6 +151,19 @@ const WASM_FILE = "plugin.wasm";
 const TINYGO_VERSION = "0.40.1";
 const DOCKER_IMAGE = `tinygo/tinygo:${TINYGO_VERSION}`;
 
+const pullTinygo = task({
+    name: "pullTinygo",
+    description: "Pulls the TinyGo Docker image if not already present.",
+    run: async () => {
+        const { stdout } = await $pipe`docker images -q ${DOCKER_IMAGE}`;
+        if (stdout.trim()) {
+            console.log(`Image ${DOCKER_IMAGE} already present.`);
+            return;
+        }
+        await $`docker pull ${DOCKER_IMAGE}`;
+    },
+});
+
 async function patchWasm(wasmBinary: Uint8Array) {
     const module = binaryen.readBinary(wasmBinary);
 
@@ -198,7 +211,7 @@ async function runBuild(useDocker: boolean) {
 export const build = task({
     name: "build",
     description: "Builds the WASM plugin. Use --no-docker to build locally.",
-    dependencies: [metadata],
+    dependencies: options.docker ? [metadata, pullTinygo] : [metadata],
     run: async () => {
         await runBuild(!!options.docker);
     },
