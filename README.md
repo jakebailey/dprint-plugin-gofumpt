@@ -22,7 +22,7 @@ After adding the plugin, configure the plugin in `dprint.json`:
         "modulePath": "github.com/myorg/myproject"
     },
     "plugins": [
-        "https://plugins.dprint.dev/jakebailey/gofumpt-v0.0.8.wasm"
+        "https://plugins.dprint.dev/jakebailey/gofumpt-v0.0.9.wasm"
     ]
 }
 ```
