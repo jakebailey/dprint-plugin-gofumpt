@@ -9,7 +9,7 @@
         "@changesets/cli": "^2.29.8",
         "@types/node": "^25.3.0",
         "@types/tmp": "^0.2.6",
-        "binaryen": "^125.0.0",
+        "binaryen": "^129.0.0",
         "dprint": "^0.51.1",
         "execa": "^9.6.1",
         "hereby": "^1.12.0",
