@@ -29,9 +29,15 @@ var (
 )
 
 type pluginConfig struct {
-	LangVersion string `json:"langVersion"`
-	ModulePath  string `json:"modulePath"`
-	ExtraRules  bool   `json:"extraRules"`
+	LangVersion string      `json:"langVersion"`
+	ModulePath  string      `json:"modulePath"`
+	ExtraRules  bool        `json:"extraRules"`
+	Extra       extraConfig `json:"extra"`
+}
+
+type extraConfig struct {
+	GroupParams   bool `json:"groupParams"`
+	ClotheReturns bool `json:"clotheReturns"`
 }
 
 type configDiagnostic struct {
@@ -104,7 +110,7 @@ func get_plugin_info() uint32 {
 		FileExtensions:  []string{"go"},
 		FileNames:       []string{},
 		HelpURL:         "https://github.com/jakebailey/dprint-plugin-gofumpt",
-		ConfigSchemaURL: "https://plugins.dprint.dev/jakebailey/gofumpt/v"+version+"/schema.json",
+		ConfigSchemaURL: "https://plugins.dprint.dev/jakebailey/gofumpt/v" + version + "/schema.json",
 		UpdateURL:       "https://plugins.dprint.dev/jakebailey/gofumpt/latest.json",
 	}
 	data, _ := json.Marshal(info)
@@ -194,7 +200,10 @@ func format(_ uint32) uint32 {
 	opts := gofumpt.Options{
 		LangVersion: config.LangVersion,
 		ModulePath:  config.ModulePath,
-		ExtraRules:  config.ExtraRules,
+		Extra: gofumpt.Extra{
+			GroupParams:   config.ExtraRules || config.Extra.GroupParams,
+			ClotheReturns: config.ExtraRules || config.Extra.ClotheReturns,
+		},
 	}
 
 	output, err := gofumpt.Source(input, opts)

@@ -1,0 +1,5 @@
+package extra
+
+func foo(x int, y int) (err error) {
+	return
+}

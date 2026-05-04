@@ -74,9 +74,28 @@ async function generateSchema(version: string) {
             },
             extraRules: {
                 description: "Enable extra formatting rules beyond the default gofumpt rules. "
-                    + "These rules are stricter but may not be desired in all projects.",
+                    + "These rules are stricter but may not be desired in all projects. "
+                    + "Deprecated: use extra to enable individual rules instead.",
                 type: "boolean",
                 default: false,
+            },
+            extra: {
+                description: "Enable individual extra formatting rules beyond the default gofumpt rules.",
+                type: "object",
+                default: {},
+                properties: {
+                    groupParams: {
+                        description: "Group adjacent function parameters with repeated types.",
+                        type: "boolean",
+                        default: false,
+                    },
+                    clotheReturns: {
+                        description:
+                            "Replace naked returns in functions with named results with explicit return values.",
+                        type: "boolean",
+                        default: false,
+                    },
+                },
             },
         },
     };
@@ -286,8 +305,46 @@ function parseTxtar(content: string): TxtarArchive {
 interface GofumptTestCase {
     inputFile: string;
     goldenFile: string;
-    extra: boolean;
+    extraRules: boolean;
+    extra: {
+        groupParams: boolean;
+        clotheReturns: boolean;
+    };
     langVersion: string;
+}
+
+function parseExtraRules(args: string[]): Pick<GofumptTestCase, "extraRules" | "extra"> {
+    const extraArg = args.find((a) => a === "-extra" || a.startsWith("-extra="));
+    const extra = {
+        groupParams: false,
+        clotheReturns: false,
+    };
+    if (!extraArg) {
+        return { extraRules: false, extra };
+    }
+
+    const value = extraArg === "-extra" ? "true" : extraArg.slice("-extra=".length);
+    if (value === "true") {
+        return { extraRules: true, extra };
+    }
+    if (value === "false") {
+        return { extraRules: false, extra };
+    }
+
+    for (const rule of value.split(",")) {
+        switch (rule) {
+            case "group_params":
+                extra.groupParams = true;
+                break;
+            case "clothe_returns":
+                extra.clotheReturns = true;
+                break;
+            default:
+                throw new Error(`Unknown gofumpt extra rule: ${rule}`);
+        }
+    }
+
+    return { extraRules: false, extra };
 }
 
 function parseGofumptTests(archive: TxtarArchive): GofumptTestCase[] {
@@ -315,7 +372,7 @@ function parseGofumptTests(archive: TxtarArchive): GofumptTestCase[] {
         if (!execMatch) continue;
 
         const args = execMatch[1].split(/\s+/);
-        const extra = args.includes("-extra");
+        const extraRules = parseExtraRules(args);
         const langArg = args.find((a) => a.startsWith("-lang="));
         const langVersion = langArg ? langArg.replace("-lang=", "") : currentGoVersion ? "go" + currentGoVersion : "";
 
@@ -335,7 +392,7 @@ function parseGofumptTests(archive: TxtarArchive): GofumptTestCase[] {
                     cases.push({
                         inputFile: cmpMatch[1],
                         goldenFile: cmpMatch[2],
-                        extra,
+                        ...extraRules,
                         langVersion,
                     });
                 }
@@ -348,7 +405,7 @@ function parseGofumptTests(archive: TxtarArchive): GofumptTestCase[] {
                 cases.push({
                     inputFile: goFiles[0],
                     goldenFile: cmpMatch[1],
-                    extra,
+                    ...extraRules,
                     langVersion,
                 });
             }
@@ -406,8 +463,11 @@ async function runGofumptTxtarTest(txtarPath: string) {
                 plugins: [path.resolve(WASM_FILE)],
             };
             const gofumptConfig = dprintConfig.gofumpt as Record<string, unknown>;
-            if (tc.extra) {
+            if (tc.extraRules) {
                 gofumptConfig.extraRules = true;
+            }
+            if (tc.extra.groupParams || tc.extra.clotheReturns) {
+                gofumptConfig.extra = tc.extra;
             }
             if (tc.langVersion) {
                 gofumptConfig.langVersion = tc.langVersion;

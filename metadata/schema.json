@@ -28,9 +28,26 @@
             ]
         },
         "extraRules": {
-            "description": "Enable extra formatting rules beyond the default gofumpt rules. These rules are stricter but may not be desired in all projects.",
+            "description": "Enable extra formatting rules beyond the default gofumpt rules. These rules are stricter but may not be desired in all projects. Deprecated: use extra to enable individual rules instead.",
             "type": "boolean",
             "default": false
+        },
+        "extra": {
+            "description": "Enable individual extra formatting rules beyond the default gofumpt rules.",
+            "type": "object",
+            "default": {},
+            "properties": {
+                "groupParams": {
+                    "description": "Group adjacent function parameters with repeated types.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "clotheReturns": {
+                    "description": "Replace naked returns in functions with named results with explicit return values.",
+                    "type": "boolean",
+                    "default": false
+                }
+            }
         }
     }
 }
