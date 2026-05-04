@@ -148,7 +148,7 @@ export const metadata = task({
 
 const WASM_FILE = "plugin.wasm";
 // renovate: datasource=github-releases depName=tinygo-org/tinygo
-const TINYGO_VERSION = "0.41.0";
+const TINYGO_VERSION = "0.41.1";
 const DOCKER_IMAGE = `ghcr.io/tinygo-org/tinygo:${TINYGO_VERSION}`;
 
 const pullTinygo = task({
