@@ -6,14 +6,14 @@
         "version": "changeset version && hereby metadata"
     },
     "devDependencies": {
-        "@changesets/cli": "^2.29.8",
-        "@types/node": "^25.3.0",
+        "@changesets/cli": "^2.31.0",
+        "@types/node": "^25.6.0",
         "@types/tmp": "^0.2.6",
-        "binaryen": "^125.0.0",
-        "dprint": "^0.51.1",
+        "binaryen": "^129.0.0",
+        "dprint": "^0.54.0",
         "execa": "^9.6.1",
-        "hereby": "^1.12.0",
+        "hereby": "^1.15.1",
         "tmp": "^0.2.5"
     },
-    "packageManager": "pnpm@10.26.0+sha512.3b3f6c725ebe712506c0ab1ad4133cf86b1f4b687effce62a9b38b4d72e3954242e643190fc51fa1642949c735f403debd44f5cb0edd657abe63a8b6a7e1e402"
+    "packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8"
 }
