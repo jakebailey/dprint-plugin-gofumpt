@@ -1,5 +1,11 @@
 # dprint-plugin-gofumpt
 
+## 0.0.10
+
+### Patch Changes
+
+- 4de46a8: Update to gofumpt v0.10.0 and add per-rule extra configuration support.
+
 ## 0.0.9
 
 ### Patch Changes
