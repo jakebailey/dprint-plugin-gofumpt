@@ -1,5 +1,11 @@
 # dprint-plugin-gofumpt
 
+## 0.0.11
+
+### Patch Changes
+
+- 8eac364: Re-patch gofumpt to prevent crashes in new commented-code formatting logic introduced in v0.10.0.
+
 ## 0.0.10
 
 ### Patch Changes
