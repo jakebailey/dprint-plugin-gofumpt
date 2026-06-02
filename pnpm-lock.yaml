@@ -18,8 +18,8 @@ importers:
         specifier: ^0.2.6
         version: 0.2.6
       binaryen:
-        specifier: ^129.0.0
-        version: 129.0.0
+        specifier: ^130.0.0
+        version: 130.0.0
       dprint:
         specifier: ^0.54.0
         version: 0.54.0
@@ -221,8 +221,8 @@ packages:
     resolution: {integrity: sha512-pbnl5XzGBdrFU/wT4jqmJVPn2B6UHPBOhzMQkY/SPUPB6QtUXtmBHBIwCbXJol93mOpGMnQyP/+BB19q04xj7g==}
     engines: {node: '>=4'}
 
-  binaryen@129.0.0:
-    resolution: {integrity: sha512-NyF5J0SfRoLDthpPh36FGTycOEv3Eqnkq3+mP5Cqt6iD9BLGGJMEVuPzu81nhLy2MMpPKmRTM9VLZihfyRQv8A==}
+  binaryen@130.0.0:
+    resolution: {integrity: sha512-XDrb+zql0RbFPKgj7MuH9zOc78R3Fa/P/VSGnnpdwYsvNZPWjcMYMdAkKCOQEL2A7yqgjSMTDRFp6gfSDW+/QQ==}
     hasBin: true
 
   braces@3.0.3:
@@ -800,7 +800,7 @@ snapshots:
     dependencies:
       is-windows: 1.0.2
 
-  binaryen@129.0.0: {}
+  binaryen@130.0.0: {}
 
   braces@3.0.3:
     dependencies:
