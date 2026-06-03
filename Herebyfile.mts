@@ -1,15 +1,106 @@
 import binaryen from "binaryen";
-import { $ as _$ } from "execa";
 import { task } from "hereby";
 import assert from "node:assert";
+import { spawn } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { parseArgs } from "node:util";
 
-const $ = _$({ verbose: "short", stdio: "inherit" });
-const $pipe = _$({ verbose: "short" });
-const $quiet = _$({});
+interface RunOptions {
+    cwd?: string;
+    env?: NodeJS.ProcessEnv;
+    stdio?: "inherit";
+    encoding?: "buffer";
+    all?: boolean;
+    verbose?: boolean;
+}
+
+interface TextRunResult {
+    stdout: string;
+    all?: string;
+}
+
+interface BufferRunResult {
+    stdout: Buffer;
+    all?: string;
+}
+
+function run(command: string, args: string[], options: RunOptions & { encoding: "buffer"; }): Promise<BufferRunResult>;
+function run(command: string, args: string[], options?: RunOptions): Promise<TextRunResult>;
+function run(command: string, args: string[], options: RunOptions = {}): Promise<TextRunResult | BufferRunResult> {
+    function formatCommand() {
+        function quoteArg(arg: string) {
+            if (/^[\w./:=@%+-]+$/.test(arg)) {
+                return arg;
+            }
+            return JSON.stringify(arg);
+        }
+
+        const env = Object.entries(options.env ?? {})
+            .filter((entry): entry is [string, string] => entry[1] !== undefined)
+            .map(([name, value]) => `${name}=${quoteArg(value)}`);
+
+        return [...env, ...[command, ...args].map(quoteArg)].join(" ");
+    }
+
+    if (options.verbose) {
+        console.error(`$ ${formatCommand()}`);
+    }
+
+    const captureOutput = options.stdio !== "inherit";
+    const child = spawn(command, args, {
+        cwd: options.cwd,
+        env: { ...process.env, ...options.env },
+        stdio: captureOutput ? ["ignore", "pipe", "pipe"] : "inherit",
+    });
+
+    const stdoutChunks: Buffer[] = [];
+    const stderrChunks: Buffer[] = [];
+    const allChunks: Buffer[] = [];
+
+    if (captureOutput) {
+        child.stdout?.on("data", (chunk: Buffer) => {
+            stdoutChunks.push(chunk);
+            if (options.all) {
+                allChunks.push(chunk);
+            }
+        });
+        child.stderr?.on("data", (chunk: Buffer) => {
+            stderrChunks.push(chunk);
+            if (options.all) {
+                allChunks.push(chunk);
+            }
+        });
+    }
+
+    return new Promise((resolve, reject) => {
+        child.on("error", reject);
+        child.on("close", (code, signal) => {
+            const stdout = Buffer.concat(stdoutChunks);
+            const stderr = Buffer.concat(stderrChunks);
+            const all = options.all ? Buffer.concat(allChunks).toString("utf8") : undefined;
+
+            if (code !== 0) {
+                const status = signal ? `signal ${signal}` : `exit code ${code}`;
+                const message = [`Command failed with ${status}: ${formatCommand()}`];
+                const output = (all ?? stderr.toString("utf8")).trimEnd();
+                if (output) {
+                    message.push(output);
+                }
+                reject(new Error(message.join("\n")));
+                return;
+            }
+
+            if (options.encoding === "buffer") {
+                resolve({ stdout, all });
+                return;
+            }
+
+            resolve({ stdout: stdout.toString("utf8"), all });
+        });
+    });
+}
 
 const { values: options } = parseArgs({
     args: process.argv.slice(2),
@@ -151,9 +242,17 @@ THIRD PARTY LICENSES
     const templatePath = path.join(templateFile.dir, "template.tpl");
     await fs.promises.writeFile(templatePath, template);
 
-    const { stdout } = await $pipe({
+    const { stdout } = await run("go", [
+        "run",
+        "github.com/google/go-licenses/v2@v2.0.1",
+        "report",
+        ".",
+        `--ignore=${moduleName}`,
+        `--template=${templatePath}`,
+    ], {
         env: { GOFLAGS: "-tags=tinygo -mod=mod" },
-    })`go run github.com/google/go-licenses/v2@v2.0.1 report . --ignore=${moduleName} --template=${templatePath}`;
+        verbose: true,
+    });
 
     await templateFile.cleanup();
 
@@ -185,12 +284,12 @@ const pullTinygo = task({
     name: "pullTinygo",
     description: "Pulls the TinyGo Docker image if not already present.",
     run: async () => {
-        const { stdout } = await $pipe`docker images -q ${DOCKER_IMAGE}`;
+        const { stdout } = await run("docker", ["images", "-q", DOCKER_IMAGE], { verbose: true });
         if (stdout.trim()) {
             console.log(`Image ${DOCKER_IMAGE} already present.`);
             return;
         }
-        await $`docker pull ${DOCKER_IMAGE}`;
+        await run("docker", ["pull", DOCKER_IMAGE], { stdio: "inherit", verbose: true });
     },
 });
 
@@ -229,10 +328,10 @@ async function runBuild(useDocker: boolean) {
             "-o", "/dev/stdout",
         ];
         /* dprint-ignore-end */
-        const { stdout } = await $pipe({ encoding: "buffer" })`docker ${dockerArgs}`;
+        const { stdout } = await run("docker", dockerArgs, { encoding: "buffer", verbose: true });
         wasmBinary = stdout;
     } else {
-        await $`tinygo ${tinygoArgs} -o ${WASM_FILE}`;
+        await run("tinygo", [...tinygoArgs, "-o", WASM_FILE], { stdio: "inherit", verbose: true });
         wasmBinary = await fs.promises.readFile(WASM_FILE);
     }
     await patchWasm(wasmBinary);
@@ -252,11 +351,11 @@ async function runTest(testName: string) {
     const testDir = path.join("testdata", testName);
     await fs.promises.copyFile(path.join(testDir, "input.go.txt"), path.join(testDir, "test.go"));
     try {
-        const result = await $quiet({
+        const result = await run("dprint", ["fmt", "--log-level=debug", "--incremental=false"], {
             cwd: testDir,
             env: { DPRINT_CACHE_DIR: cacheDir.dir },
             all: true,
-        })`dprint fmt --log-level=debug --incremental=false`;
+        });
         try {
             const expected = await fs.promises.readFile(path.join(testDir, "expected.go"), "utf8");
             const actual = await fs.promises.readFile(path.join(testDir, "test.go"), "utf8");
@@ -427,9 +526,10 @@ function parseGofumptTests(archive: TxtarArchive): GofumptTestCase[] {
 }
 
 async function getGofumptTestdataDir(): Promise<string> {
-    const { stdout } = await $pipe({
+    const { stdout } = await run("go", ["list", "-m", "-json", "mvdan.cc/gofumpt"], {
         env: { GOFLAGS: "-tags=tinygo -mod=mod" },
-    })`go list -m -json mvdan.cc/gofumpt`;
+        verbose: true,
+    });
     const info = JSON.parse(stdout);
     return path.join(info.Dir, "testdata", "script");
 }
@@ -499,11 +599,11 @@ async function runGofumptTxtarTest(txtarPath: string) {
             );
             await fs.promises.writeFile(path.join(testDir.dir, "test.go"), inputData);
 
-            const result = await $quiet({
+            const result = await run("dprint", ["fmt", "--log-level=debug", "--incremental=false"], {
                 cwd: testDir.dir,
                 env: { DPRINT_CACHE_DIR: cacheDir.dir },
                 all: true,
-            })`dprint fmt --log-level=debug --incremental=false`;
+            });
 
             try {
                 const actual = await fs.promises.readFile(path.join(testDir.dir, "test.go"), "utf8");
