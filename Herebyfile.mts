@@ -3,9 +3,9 @@ import { $ as _$ } from "execa";
 import { task } from "hereby";
 import assert from "node:assert";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { parseArgs } from "node:util";
-import tmp from "tmp";
 
 const $ = _$({ verbose: "short", stdio: "inherit" });
 const $pipe = _$({ verbose: "short" });
@@ -22,6 +22,16 @@ const { values: options } = parseArgs({
 });
 
 const metadataDir = "metadata";
+
+async function createTempDir(prefix: string) {
+    const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), prefix));
+    return {
+        dir,
+        cleanup: async () => {
+            await fs.promises.rm(dir, { recursive: true, force: true });
+        },
+    };
+}
 
 async function writeIfChanged(filePath: string, content: string) {
     try {
@@ -137,14 +147,15 @@ THIRD PARTY LICENSES
 {{ .LicenseText }}
 {{ end }}
 `;
-    const templateFile = tmp.fileSync({ postfix: ".tpl" });
-    await fs.promises.writeFile(templateFile.name, template);
+    const templateFile = await createTempDir("dprint-plugin-gofumpt-template-");
+    const templatePath = path.join(templateFile.dir, "template.tpl");
+    await fs.promises.writeFile(templatePath, template);
 
     const { stdout } = await $pipe({
         env: { GOFLAGS: "-tags=tinygo -mod=mod" },
-    })`go run github.com/google/go-licenses/v2@v2.0.1 report . --ignore=${moduleName} --template=${templateFile.name}`;
+    })`go run github.com/google/go-licenses/v2@v2.0.1 report . --ignore=${moduleName} --template=${templatePath}`;
 
-    templateFile.removeCallback();
+    await templateFile.cleanup();
 
     const content = (license + separator + stdout).trimEnd() + "\n";
     const licensesFile = path.join(metadataDir, "LICENSES");
@@ -237,13 +248,13 @@ export const build = task({
 });
 
 async function runTest(testName: string) {
-    const cacheDir = tmp.dirSync({ unsafeCleanup: true });
+    const cacheDir = await createTempDir("dprint-plugin-gofumpt-cache-");
     const testDir = path.join("testdata", testName);
     await fs.promises.copyFile(path.join(testDir, "input.go.txt"), path.join(testDir, "test.go"));
     try {
         const result = await $quiet({
             cwd: testDir,
-            env: { DPRINT_CACHE_DIR: cacheDir.name },
+            env: { DPRINT_CACHE_DIR: cacheDir.dir },
             all: true,
         })`dprint fmt --log-level=debug --incremental=false`;
         try {
@@ -256,7 +267,7 @@ async function runTest(testName: string) {
         }
     } finally {
         await fs.promises.rm(path.join(testDir, "test.go"), { force: true });
-        cacheDir.removeCallback();
+        await cacheDir.cleanup();
     }
 }
 
@@ -453,8 +464,8 @@ async function runGofumptTxtarTest(txtarPath: string) {
             throw new Error(`Missing file in archive: ${tc.inputFile} or ${tc.goldenFile}`);
         }
 
-        const testDir = tmp.dirSync({ unsafeCleanup: true });
-        const cacheDir = tmp.dirSync({ unsafeCleanup: true });
+        const testDir = await createTempDir("dprint-plugin-gofumpt-test-");
+        const cacheDir = await createTempDir("dprint-plugin-gofumpt-cache-");
         try {
             const dprintConfig: Record<string, unknown> = {
                 $schema: "https://dprint.dev/schemas/v0.json",
@@ -483,19 +494,19 @@ async function runGofumptTxtarTest(txtarPath: string) {
             }
 
             await fs.promises.writeFile(
-                path.join(testDir.name, "dprint.json"),
+                path.join(testDir.dir, "dprint.json"),
                 JSON.stringify(dprintConfig),
             );
-            await fs.promises.writeFile(path.join(testDir.name, "test.go"), inputData);
+            await fs.promises.writeFile(path.join(testDir.dir, "test.go"), inputData);
 
             const result = await $quiet({
-                cwd: testDir.name,
-                env: { DPRINT_CACHE_DIR: cacheDir.name },
+                cwd: testDir.dir,
+                env: { DPRINT_CACHE_DIR: cacheDir.dir },
                 all: true,
             })`dprint fmt --log-level=debug --incremental=false`;
 
             try {
-                const actual = await fs.promises.readFile(path.join(testDir.name, "test.go"), "utf8");
+                const actual = await fs.promises.readFile(path.join(testDir.dir, "test.go"), "utf8");
                 assert.strictEqual(
                     actual,
                     goldenData,
@@ -506,8 +517,8 @@ async function runGofumptTxtarTest(txtarPath: string) {
                 throw e;
             }
         } finally {
-            testDir.removeCallback();
-            cacheDir.removeCallback();
+            await testDir.cleanup();
+            await cacheDir.cleanup();
         }
     }
 }
