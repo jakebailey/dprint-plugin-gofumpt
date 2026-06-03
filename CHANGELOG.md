@@ -1,5 +1,11 @@
 # dprint-plugin-gofumpt
 
+## 0.0.12
+
+### Patch Changes
+
+- 1c8ab60: Update gofumpt to v0.10.1-0.20260531213040-cc84354298ea, undo vendor patching
+
 ## 0.0.11
 
 ### Patch Changes
