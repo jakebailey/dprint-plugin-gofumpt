@@ -7,4 +7,4 @@ permissions:
   contents: write
   checks: read
   issues: read
-  pull-requests: write
+  pull_requests: write
