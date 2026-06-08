@@ -1,7 +1,7 @@
 name: Release
 
-# We trigger on pushes to tags, since they are pushed with a deploy key
-# in the changesets workflow in order to bypass GHA token restrictions.
+# We trigger on pushes to tags, since they are pushed by the Octo STS-backed
+# changesets workflow in order to bypass GHA token restrictions.
 on:
   push:
     tags:

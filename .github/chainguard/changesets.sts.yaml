@@ -1,0 +1,8 @@
+issuer: https://token.actions.githubusercontent.com
+subject: repo:jakebailey/dprint-plugin-gofumpt:ref:refs/heads/main
+
+permissions:
+  contents: write
+  checks: read
+  issues: read
+  pull-requests: write
