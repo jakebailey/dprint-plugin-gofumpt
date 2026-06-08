@@ -1,5 +1,7 @@
 issuer: https://token.actions.githubusercontent.com
 subject: repo:jakebailey/dprint-plugin-gofumpt:ref:refs/heads/main
+claim_pattern:
+  workflow_ref: jakebailey/dprint-plugin-gofumpt/\.github/workflows/changesets\.yml@refs/heads/main
 
 permissions:
   contents: write
