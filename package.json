@@ -10,7 +10,7 @@
         "@changesets/cli": "^2.31.0",
         "@types/node": "^25.9.1",
         "binaryen": "^130.0.0",
-        "dprint": "^0.54.0",
+        "dprint": "^0.55.1",
         "hereby": "^1.15.1",
         "typescript": "^6.0.3"
     },
