@@ -33,7 +33,7 @@
     },
     "scripts": {
         "typecheck": "tsc",
-        "version": "changeset version && hereby metadata",
+        "version": "changeset version && hereby releaseMetadata",
         "prepack": "hereby build"
     },
     "devDependencies": {

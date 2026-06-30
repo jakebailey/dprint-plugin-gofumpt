@@ -65,7 +65,7 @@ plugin versions correspond to which `gofumpt` versions.
 
 | Plugin Version | gofumpt Version                       |
 | -------------- | ------------------------------------- |
-| v0.0.12        | v0.10.1-0.20260531213040-cc84354298ea |
+| v0.0.12+       | v0.10.1-0.20260531213040-cc84354298ea |
 | v0.0.10+       | v0.10.0                               |
 | v0.0.2+        | v0.9.3-0.20251215221355-d3e4b13ef7fa  |
 | v0.0.1         | v0.9.2                                |

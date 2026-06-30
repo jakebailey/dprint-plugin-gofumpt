@@ -204,6 +204,66 @@ async function generateSchema(version: string) {
     await writeIfChanged(schemaFile, JSON.stringify(schema, null, 4) + "\n");
 }
 
+function readGofumptVersion(goMod: string) {
+    const match = goMod.match(/mvdan\.cc\/gofumpt\s+(v\S+)/);
+    if (!match) {
+        throw new Error("Could not find gofumpt version in go.mod");
+    }
+    return match[1];
+}
+
+interface VersionsTableRow {
+    // The first plugin version that shipped with this gofumpt version.
+    firstVersion: string;
+    // Whether later plugin versions also use it (rendered as a trailing "+").
+    plus: boolean;
+    gofumptVersion: string;
+}
+
+// Keeps the "Versions" table in sync with the current plugin and gofumpt
+// versions. The newest row spans every release from its first version onward, so
+// it gains a "+" once a later plugin version ships against the same gofumpt; when
+// gofumpt changes, a new row is prepended. Older rows are left untouched.
+function updateVersionsTable(readme: string, version: string, gofumptVersion: string) {
+    const lines = readme.split("\n");
+    const headerIndex = lines.findIndex((line) =>
+        /^\|\s*Plugin Version\s*\|\s*gofumpt Version\s*\|$/.test(line.trim())
+    );
+    if (headerIndex === -1) {
+        throw new Error("Could not find the versions table in README.md");
+    }
+
+    const dataStart = headerIndex + 2; // skip the header and separator rows
+    let dataEnd = dataStart;
+    while (dataEnd < lines.length && lines[dataEnd].trim().startsWith("|")) {
+        dataEnd++;
+    }
+
+    const rows: VersionsTableRow[] = [];
+    for (let i = dataStart; i < dataEnd; i++) {
+        const [pluginCell, gofumptCell] = lines[i].split("|").slice(1, -1).map((cell) => cell.trim());
+        rows.push({
+            firstVersion: pluginCell.replace(/^v/, "").replace(/\+$/, ""),
+            plus: pluginCell.endsWith("+"),
+            gofumptVersion: gofumptCell,
+        });
+    }
+
+    if (rows.length === 0 || rows[0].gofumptVersion !== gofumptVersion) {
+        rows.unshift({ firstVersion: version, plus: false, gofumptVersion });
+    }
+    rows[0].plus = rows[0].firstVersion !== version;
+
+    // Emit a minimal table; dprint aligns the columns afterwards.
+    const table = [
+        "| Plugin Version | gofumpt Version |",
+        "| --- | --- |",
+        ...rows.map((row) => `| v${row.firstVersion}${row.plus ? "+" : ""} | ${row.gofumptVersion} |`),
+    ];
+
+    return [...lines.slice(0, headerIndex), ...table, ...lines.slice(dataEnd)].join("\n");
+}
+
 async function updateReadmeVersion(version: string) {
     const readmePath = "README.md";
     const readme = await fs.promises.readFile(readmePath, "utf8");
@@ -217,6 +277,23 @@ async function updateReadmeVersion(version: string) {
             `@jakebailey/dprint-plugin-gofumpt@${version}`,
         );
     await writeIfChanged(readmePath, updated);
+}
+
+// Updates the README versions table for the current release. This is deliberately
+// not part of `metadata` (which runs on every build): the table maps *released*
+// plugin versions to gofumpt versions, so it must only be rewritten once the
+// release version is known, i.e. after `changeset version` has bumped it.
+async function updateReadmeVersionsTable() {
+    const readmePath = "README.md";
+    const packageJson = JSON.parse(await fs.promises.readFile("package.json", "utf8"));
+    const version: string = packageJson.version;
+    const goMod = await fs.promises.readFile("go.mod", "utf8");
+    const gofumptVersion = readGofumptVersion(goMod);
+
+    const readme = await fs.promises.readFile(readmePath, "utf8");
+    await fs.promises.writeFile(readmePath, updateVersionsTable(readme, version, gofumptVersion));
+    // Let dprint handle the exact table alignment / markdown formatting.
+    await run("dprint", ["fmt", readmePath], { verbose: true });
 }
 
 async function generateLicenses() {
@@ -278,6 +355,13 @@ export const metadata = task({
             updateReadmeVersion(version),
         ]);
     },
+});
+
+export const releaseMetadata = task({
+    name: "releaseMetadata",
+    description: "Generates metadata and updates the README versions table; run when bumping the release version.",
+    dependencies: [metadata],
+    run: updateReadmeVersionsTable,
 });
 
 const WASM_FILE = "plugin.wasm";
