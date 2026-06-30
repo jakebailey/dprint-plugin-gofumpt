@@ -1,5 +1,12 @@
 # dprint-plugin-gofumpt
 
+## 0.0.13
+
+### Patch Changes
+
+- 630041d: Start publishing the plugin to npm as `@jakebailey/dprint-plugin-gofumpt`, so it
+  can be referenced with an `npm:` specifier in dprint 0.55+.
+
 ## 0.0.12
 
 ### Patch Changes
