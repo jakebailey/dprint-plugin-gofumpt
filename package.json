@@ -1,13 +1,44 @@
 {
-    "name": "dprint-plugin-gofumpt",
+    "name": "@jakebailey/dprint-plugin-gofumpt",
     "version": "0.0.12",
-    "private": true,
+    "description": "Wasm module for dprint-plugin-gofumpt, a dprint plugin for formatting Go code with gofumpt.",
+    "main": "./index.js",
+    "types": "./index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jakebailey/dprint-plugin-gofumpt.git"
+    },
+    "keywords": [
+        "go",
+        "gofumpt",
+        "gofmt",
+        "code",
+        "formatter",
+        "dprint"
+    ],
+    "author": "Jake Bailey",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/jakebailey/dprint-plugin-gofumpt/issues"
+    },
+    "homepage": "https://github.com/jakebailey/dprint-plugin-gofumpt#readme",
+    "files": [
+        "index.js",
+        "index.d.ts",
+        "plugin.wasm",
+        "metadata/LICENSES"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "typecheck": "tsc",
-        "version": "changeset version && hereby metadata"
+        "version": "changeset version && hereby metadata",
+        "prepack": "hereby build"
     },
     "devDependencies": {
         "@changesets/cli": "^2.31.0",
+        "@dprint/formatter": "^0.5.1",
         "@types/node": "^26.0.1",
         "binaryen": "^130.0.0",
         "dprint": "^0.55.1",

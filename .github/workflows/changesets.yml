@@ -14,6 +14,8 @@ jobs:
     name: Changesets
     runs-on: ubuntu-latest
 
+    environment: release
+
     if: github.repository == 'jakebailey/dprint-plugin-gofumpt'
 
     permissions:
@@ -41,6 +43,10 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
+
+      # Ensure a recent npm for OIDC trusted publishing to npmjs.com.
+      - run: npm install -g npm@latest
+
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
           run_install: true
@@ -62,13 +68,9 @@ jobs:
           title: 'Release v${{ steps.version.outputs.version }}'
           commit: 'Release v${{ steps.version.outputs.version }}'
           version: pnpm run version
-          publish: pnpm changeset tag
+          publish: pnpm changeset publish
         env:
           GITHUB_TOKEN: ${{ steps.octo-sts.outputs.token }}
-
-      - name: Build
-        if: steps.changesets.outputs.published == 'true'
-        run: pnpm hereby build
 
       - name: Upload release assets
         if: steps.changesets.outputs.published == 'true'

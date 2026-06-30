@@ -207,10 +207,15 @@ async function generateSchema(version: string) {
 async function updateReadmeVersion(version: string) {
     const readmePath = "README.md";
     const readme = await fs.promises.readFile(readmePath, "utf8");
-    const updated = readme.replace(
-        /gofumpt-v[0-9]+\.[0-9]+\.[0-9]+\.wasm/g,
-        `gofumpt-v${version}.wasm`,
-    );
+    const updated = readme
+        .replace(
+            /gofumpt-v[0-9]+\.[0-9]+\.[0-9]+\.wasm/g,
+            `gofumpt-v${version}.wasm`,
+        )
+        .replace(
+            /@jakebailey\/dprint-plugin-gofumpt@[0-9]+\.[0-9]+\.[0-9]+/g,
+            `@jakebailey/dprint-plugin-gofumpt@${version}`,
+        );
     await writeIfChanged(readmePath, updated);
 }
 
@@ -657,5 +662,8 @@ export const test = task({
         }
 
         console.log(`\nGofumpt tests: ${passed} passed, ${skipped} skipped`);
+
+        console.log(`\nRunning JS API test...`);
+        await run("node", ["index.test.js"], { stdio: "inherit", verbose: true });
     },
 });

@@ -27,6 +27,23 @@ After adding the plugin, configure the plugin in `dprint.json`:
 }
 ```
 
+Alternatively, the plugin is published to npm and can be referenced with an
+[`npm:` specifier](https://dsherret.dev/posts/dprint-0.55/) (requires dprint
+0.55 or newer):
+
+```sh
+dprint add npm:@jakebailey/dprint-plugin-gofumpt
+```
+
+```jsonc
+{
+    // ...
+    "plugins": [
+        "npm:@jakebailey/dprint-plugin-gofumpt@0.0.12"
+    ]
+}
+```
+
 ## Configuration
 
 It is recommended to set both `langVersion` and `modulePath` for consistent

@@ -11,6 +11,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.31.0
         version: 2.31.0(@types/node@26.0.1)
+      '@dprint/formatter':
+        specifier: ^0.5.1
+        version: 0.5.1
       '@types/node':
         specifier: ^26.0.1
         version: 26.0.1
@@ -107,6 +110,9 @@ packages:
     resolution: {integrity: sha512-AsET9+4rMk7ZFEMq3HYl/hYNBMBrR/juiSzclEU0oUCf3koxFbVKL8Srad8Vhyv8jEnOaMn78TCnahmHhp1SCQ==}
     cpu: [x64]
     os: [darwin]
+
+  '@dprint/formatter@0.5.1':
+    resolution: {integrity: sha512-cdZUrm0iv/FnnY3CKE2dEcVhNEzrC551aE2h2mTFwQCRBrqyARLDnb7D+3PlXTUVp3s34ftlnGOVCmhLT9DeKA==}
 
   '@dprint/linux-arm64-glibc@0.55.1':
     resolution: {integrity: sha512-vt7w+aL2MjtD3RRfnUTDuK/b7xg1/feBe3WoV0S2rGNmPEJI+K7wwBXkOl/I77V9w3PP2zvN/aRY5dMOZrkbSg==}
@@ -666,6 +672,8 @@ snapshots:
 
   '@dprint/darwin-x64@0.55.1':
     optional: true
+
+  '@dprint/formatter@0.5.1': {}
 
   '@dprint/linux-arm64-glibc@0.55.1':
     optional: true
