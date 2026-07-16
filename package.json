@@ -37,7 +37,7 @@
         "prepack": "hereby build"
     },
     "devDependencies": {
-        "@changesets/cli": "^2.31.0",
+        "@changesets/cli": "^2.31.1",
         "@dprint/formatter": "^0.5.1",
         "@types/node": "^26.0.1",
         "binaryen": "^130.0.0",
