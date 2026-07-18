@@ -14,6 +14,15 @@ importers:
       '@dprint/formatter':
         specifier: ^0.5.1
         version: 0.5.1
+      '@dprint/json':
+        specifier: 0.21.0
+        version: 0.21.0
+      '@dprint/markdown':
+        specifier: 0.20.0
+        version: 0.20.0
+      '@dprint/typescript':
+        specifier: 0.95.13
+        version: 0.95.13
       '@types/node':
         specifier: ^26.0.1
         version: 26.0.1
@@ -23,6 +32,9 @@ importers:
       dprint:
         specifier: ^0.55.1
         version: 0.55.1
+      dprint-plugin-yaml:
+        specifier: 0.5.1
+        version: 0.5.1
       hereby:
         specifier: ^1.15.1
         version: 1.15.1
@@ -114,6 +126,9 @@ packages:
   '@dprint/formatter@0.5.1':
     resolution: {integrity: sha512-cdZUrm0iv/FnnY3CKE2dEcVhNEzrC551aE2h2mTFwQCRBrqyARLDnb7D+3PlXTUVp3s34ftlnGOVCmhLT9DeKA==}
 
+  '@dprint/json@0.21.0':
+    resolution: {integrity: sha512-Ptds5055ES2mziP7WDh04DOU/KDumQ+iBb3FuYyniXaEBDasp7Jr/Emarxo9JCEtGb0zEMdM83H7iADHSNXxtg==}
+
   '@dprint/linux-arm64-glibc@0.55.1':
     resolution: {integrity: sha512-vt7w+aL2MjtD3RRfnUTDuK/b7xg1/feBe3WoV0S2rGNmPEJI+K7wwBXkOl/I77V9w3PP2zvN/aRY5dMOZrkbSg==}
     cpu: [arm64]
@@ -167,6 +182,12 @@ packages:
     cpu: [x64]
     os: [linux]
     libc: [musl]
+
+  '@dprint/markdown@0.20.0':
+    resolution: {integrity: sha512-qvynFdQZwul4Y+hoMP02QerEhM5VItb4cO8/qpQrSuQuYvDU+bIseiheVAetSpWlNPBU1JK8bQKloiCSp9lXnA==}
+
+  '@dprint/typescript@0.95.13':
+    resolution: {integrity: sha512-lzhaiENYcsLOo+qJHzwWbZ/Ne+67eDGLwhU52Z0AnW6gHeCN1EZ8DDe5gI/f/Fvk2Jd2wlnmoyrsrYnkg/SDgw==}
 
   '@dprint/win32-arm64@0.55.1':
     resolution: {integrity: sha512-9jiZWZ2AkaaXIkaOpOoiP6v0XxuBFp1Hyi3kUMUAY4NVCmvlSEDQhr+UZgnDhozYygDbAV13iNMLERDeoUa0nA==}
@@ -255,6 +276,9 @@ packages:
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
+
+  dprint-plugin-yaml@0.5.1:
+    resolution: {integrity: sha512-6q1C75Z492QV/6yCXEsgZ6sQQFZwJcdu10rifB2qNS59ltAYsMNiK1xPWeDDMxjv6UBnQJyd/psCuAiucdRNgA==}
 
   dprint@0.55.1:
     resolution: {integrity: sha512-tgUCT9gAM7veMvLX5NmRoYVLnKGKrIYRXpNpJDJj5U7/YIIJef5rLJhPZaJXwB7ad2Vo0Kv//nQM1xkrn5j8kQ==}
@@ -675,6 +699,8 @@ snapshots:
 
   '@dprint/formatter@0.5.1': {}
 
+  '@dprint/json@0.21.0': {}
+
   '@dprint/linux-arm64-glibc@0.55.1':
     optional: true
 
@@ -701,6 +727,10 @@ snapshots:
 
   '@dprint/linux-x64-musl@0.55.1':
     optional: true
+
+  '@dprint/markdown@0.20.0': {}
+
+  '@dprint/typescript@0.95.13': {}
 
   '@dprint/win32-arm64@0.55.1':
     optional: true
@@ -784,6 +814,8 @@ snapshots:
   dir-glob@3.0.1:
     dependencies:
       path-type: 4.0.0
+
+  dprint-plugin-yaml@0.5.1: {}
 
   dprint@0.55.1:
     optionalDependencies:
