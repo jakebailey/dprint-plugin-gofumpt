@@ -15,8 +15,8 @@ importers:
         specifier: ^0.5.1
         version: 0.5.1
       '@dprint/json':
-        specifier: 0.21.0
-        version: 0.21.0
+        specifier: 0.23.0
+        version: 0.23.0
       '@dprint/markdown':
         specifier: 0.20.0
         version: 0.20.0
@@ -126,8 +126,8 @@ packages:
   '@dprint/formatter@0.5.1':
     resolution: {integrity: sha512-cdZUrm0iv/FnnY3CKE2dEcVhNEzrC551aE2h2mTFwQCRBrqyARLDnb7D+3PlXTUVp3s34ftlnGOVCmhLT9DeKA==}
 
-  '@dprint/json@0.21.0':
-    resolution: {integrity: sha512-Ptds5055ES2mziP7WDh04DOU/KDumQ+iBb3FuYyniXaEBDasp7Jr/Emarxo9JCEtGb0zEMdM83H7iADHSNXxtg==}
+  '@dprint/json@0.23.0':
+    resolution: {integrity: sha512-FYFbZyrBr343JzCNkwa87+Lk2YnElpv0gzl+i5CXfMjixXzWWAKK2vEuzKoeCsJys4B3bfxmi0ByJ/xW2CY2jw==}
 
   '@dprint/linux-arm64-glibc@0.55.1':
     resolution: {integrity: sha512-vt7w+aL2MjtD3RRfnUTDuK/b7xg1/feBe3WoV0S2rGNmPEJI+K7wwBXkOl/I77V9w3PP2zvN/aRY5dMOZrkbSg==}
@@ -699,7 +699,7 @@ snapshots:
 
   '@dprint/formatter@0.5.1': {}
 
-  '@dprint/json@0.21.0': {}
+  '@dprint/json@0.23.0': {}
 
   '@dprint/linux-arm64-glibc@0.55.1':
     optional: true

@@ -39,7 +39,7 @@
     "devDependencies": {
         "@changesets/cli": "^2.31.0",
         "@dprint/formatter": "^0.5.1",
-        "@dprint/json": "0.21.0",
+        "@dprint/json": "0.23.0",
         "@dprint/markdown": "0.20.0",
         "@dprint/typescript": "0.95.13",
         "@types/node": "^26.0.1",
