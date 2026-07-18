@@ -18,8 +18,8 @@ importers:
         specifier: 0.21.0
         version: 0.21.0
       '@dprint/markdown':
-        specifier: 0.20.0
-        version: 0.20.0
+        specifier: 0.22.1
+        version: 0.22.1
       '@dprint/typescript':
         specifier: 0.95.13
         version: 0.95.13
@@ -183,8 +183,8 @@ packages:
     os: [linux]
     libc: [musl]
 
-  '@dprint/markdown@0.20.0':
-    resolution: {integrity: sha512-qvynFdQZwul4Y+hoMP02QerEhM5VItb4cO8/qpQrSuQuYvDU+bIseiheVAetSpWlNPBU1JK8bQKloiCSp9lXnA==}
+  '@dprint/markdown@0.22.1':
+    resolution: {integrity: sha512-L5BYR66HNxs5vmGGYze/SP9wrIJnHIhbZGCbdP2N+o5gbukhau3ulFbaG/rB7u9H51LXGePue1sFXVgS5IiU2A==}
 
   '@dprint/typescript@0.95.13':
     resolution: {integrity: sha512-lzhaiENYcsLOo+qJHzwWbZ/Ne+67eDGLwhU52Z0AnW6gHeCN1EZ8DDe5gI/f/Fvk2Jd2wlnmoyrsrYnkg/SDgw==}
@@ -728,7 +728,7 @@ snapshots:
   '@dprint/linux-x64-musl@0.55.1':
     optional: true
 
-  '@dprint/markdown@0.20.0': {}
+  '@dprint/markdown@0.22.1': {}
 
   '@dprint/typescript@0.95.13': {}
 
