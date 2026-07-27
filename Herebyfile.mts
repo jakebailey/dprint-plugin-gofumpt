@@ -221,15 +221,14 @@ function readGofumptVersion(goMod: string) {
 interface VersionsTableRow {
     // The first plugin version that shipped with this gofumpt version.
     firstVersion: string;
-    // Whether later plugin versions also use it (rendered as a trailing "+").
+    // Whether this version and later plugin versions use it (rendered as a trailing "+").
     plus: boolean;
     gofumptVersion: string;
 }
 
 // Keeps the "Versions" table in sync with the current plugin and gofumpt
-// versions. The newest row spans every release from its first version onward, so
-// it gains a "+" once a later plugin version ships against the same gofumpt; when
-// gofumpt changes, a new row is prepended. Older rows are left untouched.
+// versions. When gofumpt changes, a new open-ended row is prepended for the
+// release that first ships it. Older rows are left untouched.
 function updateVersionsTable(readme: string, version: string, gofumptVersion: string) {
     const lines = readme.split("\n");
     const headerIndex = lines.findIndex((line) =>
@@ -256,9 +255,8 @@ function updateVersionsTable(readme: string, version: string, gofumptVersion: st
     }
 
     if (rows.length === 0 || rows[0].gofumptVersion !== gofumptVersion) {
-        rows.unshift({ firstVersion: version, plus: false, gofumptVersion });
+        rows.unshift({ firstVersion: version, plus: true, gofumptVersion });
     }
-    rows[0].plus = rows[0].firstVersion !== version;
 
     // Emit a minimal table; dprint aligns the columns afterwards.
     const table = [
