@@ -38,6 +38,7 @@ type pluginConfig struct {
 type extraConfig struct {
 	GroupParams   bool `json:"groupParams"`
 	ClotheReturns bool `json:"clotheReturns"`
+	BalanceCalls  bool `json:"balanceCalls"`
 }
 
 type configDiagnostic struct {
@@ -203,6 +204,7 @@ func format(_ uint32) uint32 {
 		Extra: gofumpt.Extra{
 			GroupParams:   config.ExtraRules || config.Extra.GroupParams,
 			ClotheReturns: config.ExtraRules || config.Extra.ClotheReturns,
+			BalanceCalls:  config.ExtraRules || config.Extra.BalanceCalls,
 		},
 	}
 

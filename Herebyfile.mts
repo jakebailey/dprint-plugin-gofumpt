@@ -196,6 +196,12 @@ async function generateSchema(version: string) {
                         type: "boolean",
                         default: false,
                     },
+                    balanceCalls: {
+                        description: "Place a multi-line call's closing parenthesis on its own line "
+                            + "when the opening parenthesis ends a line.",
+                        type: "boolean",
+                        default: false,
+                    },
                 },
             },
         },
@@ -508,6 +514,7 @@ interface GofumptTestCase {
     extra: {
         groupParams: boolean;
         clotheReturns: boolean;
+        balanceCalls: boolean;
     };
     langVersion: string;
 }
@@ -517,6 +524,7 @@ function parseExtraRules(args: string[]): Pick<GofumptTestCase, "extraRules" | "
     const extra = {
         groupParams: false,
         clotheReturns: false,
+        balanceCalls: false,
     };
     if (!extraArg) {
         return { extraRules: false, extra };
@@ -537,6 +545,9 @@ function parseExtraRules(args: string[]): Pick<GofumptTestCase, "extraRules" | "
                 break;
             case "clothe_returns":
                 extra.clotheReturns = true;
+                break;
+            case "balance_calls":
+                extra.balanceCalls = true;
                 break;
             default:
                 throw new Error(`Unknown gofumpt extra rule: ${rule}`);
@@ -666,7 +677,7 @@ async function runGofumptTxtarTest(txtarPath: string) {
             if (tc.extraRules) {
                 gofumptConfig.extraRules = true;
             }
-            if (tc.extra.groupParams || tc.extra.clotheReturns) {
+            if (tc.extra.groupParams || tc.extra.clotheReturns || tc.extra.balanceCalls) {
                 gofumptConfig.extra = tc.extra;
             }
             if (tc.langVersion) {

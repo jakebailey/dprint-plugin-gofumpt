@@ -56,6 +56,7 @@ formatting results, as the plugin cannot infer this information from `go.mod`.
 | `extra`               | `object`  | `{}`    | Enable individual extra rules.                                                                                                                                 |
 | `extra.groupParams`   | `boolean` | `false` | Group adjacent function parameters with repeated types.                                                                                                        |
 | `extra.clotheReturns` | `boolean` | `false` | Replace naked returns in functions with named results with explicit return values.                                                                             |
+| `extra.balanceCalls`  | `boolean` | `false` | Place a multi-line call's closing parenthesis on its own line when the opening parenthesis ends a line.                                                        |
 | `extraRules`          | `boolean` | `false` | Enable all extra formatting rules beyond the default gofumpt rules. Deprecated: use `extra` to enable individual rules instead.                                |
 
 ## Versions
