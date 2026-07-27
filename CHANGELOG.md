@@ -1,5 +1,11 @@
 # dprint-plugin-gofumpt
 
+## 0.0.14
+
+### Patch Changes
+
+- 2428cd6: Update to gofumpt v0.11.0
+
 ## 0.0.13
 
 ### Patch Changes
