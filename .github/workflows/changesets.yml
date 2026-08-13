@@ -57,20 +57,19 @@ jobs:
       - name: Capture new release version
         id: version
         run: |
-          pnpm changeset version
-          echo "version=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
-          git restore .
+          pnpm changeset status --output "$RUNNER_TEMP/changeset-status.json"
+          current_version=$(jq -r '.version' package.json)
+          version=$(jq -r --arg current "$current_version" '.releases[0].newVersion // $current' "$RUNNER_TEMP/changeset-status.json")
+          echo "version=$version" >> $GITHUB_OUTPUT
 
       - id: changesets
-        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        uses: changesets/action@22ccf9aa43179fe9e27dc62e575971d28cce197c # v2.0.0
         with:
           github-token: ${{ steps.octo-sts.outputs.token }}
-          title: 'Release v${{ steps.version.outputs.version }}'
-          commit: 'Release v${{ steps.version.outputs.version }}'
-          version: pnpm run version
-          publish: pnpm changeset publish
-        env:
-          GITHUB_TOKEN: ${{ steps.octo-sts.outputs.token }}
+          pr-title: 'Release v${{ steps.version.outputs.version }}'
+          commit-message: 'Release v${{ steps.version.outputs.version }}'
+          version-script: pnpm run version
+          publish-script: pnpm changeset publish
 
       - name: Upload release assets
         if: steps.changesets.outputs.published == 'true'
