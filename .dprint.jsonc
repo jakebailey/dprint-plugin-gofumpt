@@ -23,9 +23,7 @@
         "**/node_modules",
         "**/*-lock.json",
         "pnpm-lock.yaml",
-        "testdata/**",
-        ".changeset/**/*.md",
-        "CHANGELOG.md"
+        "testdata/**"
     ],
     "plugins": [
         "npm:@dprint/typescript",
