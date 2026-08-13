@@ -10,26 +10,30 @@
 
 ### Patch Changes
 
-- 630041d: Start publishing the plugin to npm as `@jakebailey/dprint-plugin-gofumpt`, so it
-  can be referenced with an `npm:` specifier in dprint 0.55+.
+- 630041d: Start publishing the plugin to npm as
+  `@jakebailey/dprint-plugin-gofumpt`, so it can be referenced with an `npm:`
+  specifier in dprint 0.55+.
 
 ## 0.0.12
 
 ### Patch Changes
 
-- 1c8ab60: Update gofumpt to v0.10.1-0.20260531213040-cc84354298ea, undo vendor patching
+- 1c8ab60: Update gofumpt to v0.10.1-0.20260531213040-cc84354298ea, undo vendor
+  patching
 
 ## 0.0.11
 
 ### Patch Changes
 
-- 8eac364: Re-patch gofumpt to prevent crashes in new commented-code formatting logic introduced in v0.10.0.
+- 8eac364: Re-patch gofumpt to prevent crashes in new commented-code formatting
+  logic introduced in v0.10.0.
 
 ## 0.0.10
 
 ### Patch Changes
 
-- 4de46a8: Update to gofumpt v0.10.0 and add per-rule extra configuration support.
+- 4de46a8: Update to gofumpt v0.10.0 and add per-rule extra configuration
+  support.
 
 ## 0.0.9
 
