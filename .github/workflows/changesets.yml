@@ -47,7 +47,7 @@ jobs:
       # Ensure a recent npm for OIDC trusted publishing to npmjs.com.
       - run: npm install -g npm@latest
 
-      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
           run_install: true
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -63,7 +63,7 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - id: changesets
-        uses: changesets/action@22ccf9aa43179fe9e27dc62e575971d28cce197c # v2.0.0
+        uses: changesets/action@8488615a623b1b9c987934bb89eae8af6a946ac1 # v2.1.1
         with:
           github-token: ${{ steps.octo-sts.outputs.token }}
           pr-title: 'Release v${{ steps.version.outputs.version }}'
