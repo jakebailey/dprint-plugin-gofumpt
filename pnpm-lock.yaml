@@ -27,8 +27,8 @@ importers:
         specifier: ^26.1.1
         version: 26.1.1
       binaryen:
-        specifier: ^131.0.0
-        version: 131.0.0
+        specifier: ^132.0.0
+        version: 132.0.0
       dprint:
         specifier: ^0.55.2
         version: 0.55.2
@@ -348,8 +348,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  binaryen@131.0.0:
-    resolution: {integrity: sha512-anblNezmBjfWGfOMvZq1j5MwhVnMs+gezqbDz4FBFwx6twDwOsQSed+E8i4UKmLYXb3r+f3HWmz7Lx5sx5qOyQ==}
+  binaryen@132.0.0:
+    resolution: {integrity: sha512-4Usg7yEvwO3FMso3Oov6qkOOHSod1IEv+boKkh77kTljM+eNBouqCTbqWswGzbG+vDNO/b/v2C4gfEh1WgB9Lg==}
     hasBin: true
 
   cac@7.0.0:
@@ -697,7 +697,7 @@ snapshots:
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
 
-  binaryen@131.0.0: {}
+  binaryen@132.0.0: {}
 
   cac@7.0.0: {}
 
