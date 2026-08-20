@@ -1,5 +1,12 @@
 # dprint-plugin-gofumpt
 
+## 0.0.15
+
+### Patch Changes
+
+- 6a1f7b9: Update gofumpt to v0.11.1-0.20260820074422-a2bc6805583d for Go 1.27
+  support
+
 ## 0.0.14
 
 ### Patch Changes

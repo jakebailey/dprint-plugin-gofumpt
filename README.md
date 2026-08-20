@@ -22,7 +22,7 @@ After adding the plugin, configure the plugin in `dprint.json`:
         "modulePath": "github.com/myorg/myproject"
     },
     "plugins": [
-        "https://plugins.dprint.dev/jakebailey/gofumpt-v0.0.14.wasm"
+        "https://plugins.dprint.dev/jakebailey/gofumpt-v0.0.15.wasm"
     ]
 }
 ```
@@ -39,7 +39,7 @@ dprint add npm:@jakebailey/dprint-plugin-gofumpt
 {
     // ...
     "plugins": [
-        "npm:@jakebailey/dprint-plugin-gofumpt@0.0.14"
+        "npm:@jakebailey/dprint-plugin-gofumpt@0.0.15"
     ]
 }
 ```
@@ -66,6 +66,7 @@ plugin versions correspond to which `gofumpt` versions.
 
 | Plugin Version | gofumpt Version                       |
 | -------------- | ------------------------------------- |
+| v0.0.15+       | v0.11.1-0.20260820074422-a2bc6805583d |
 | v0.0.14+       | v0.11.0                               |
 | v0.0.12+       | v0.10.1-0.20260531213040-cc84354298ea |
 | v0.0.10+       | v0.10.0                               |
