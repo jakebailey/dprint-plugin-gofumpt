@@ -369,9 +369,9 @@ export const releaseMetadata = task({
 });
 
 const WASM_FILE = "plugin.wasm";
-// renovate: datasource=github-releases depName=tinygo-org/tinygo
-const TINYGO_VERSION = "0.41.1";
-const DOCKER_IMAGE = `ghcr.io/tinygo-org/tinygo:${TINYGO_VERSION}`;
+// Go 1.27 syntax support without the LLVM 22 wasm-unknown strlen regression.
+const TINYGO_VERSION = "sha-91a56b28a296afd1d48350d0225b7d4b6cecf8f0";
+const DOCKER_IMAGE = `ghcr.io/tinygo-org/tinygo-dev:${TINYGO_VERSION}`;
 
 const pullTinygo = task({
     name: "pullTinygo",

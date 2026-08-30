@@ -1,0 +1,8 @@
+{
+  "$schema": "https://dprint.dev/schemas/v0.json",
+  "gofumpt": {
+    "langVersion": "go1.27"
+  },
+  "includes": ["test.go"],
+  "plugins": ["../../plugin.wasm"]
+}
