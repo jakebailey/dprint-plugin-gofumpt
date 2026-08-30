@@ -1,4 +1,6 @@
 allowBuilds:
   dprint: true
+minimumReleaseAgeExclude:
+  - '@dprint/markdown@0.23.2'
 onlyBuiltDependencies:
   - dprint
