@@ -1,5 +1,11 @@
 # dprint-plugin-gofumpt
 
+## 0.0.16
+
+### Patch Changes
+
+- 3a2df24: Support formatting Go 1.27 generic methods
+
 ## 0.0.15
 
 ### Patch Changes
