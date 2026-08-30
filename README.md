@@ -22,23 +22,6 @@ After adding the plugin, configure the plugin in `dprint.json`:
         "modulePath": "github.com/myorg/myproject"
     },
     "plugins": [
-        "https://plugins.dprint.dev/jakebailey/gofumpt-v0.0.15.wasm"
-    ]
-}
-```
-
-Alternatively, the plugin is published to npm and can be referenced with an
-[`npm:` specifier](https://dsherret.dev/posts/dprint-0.55/) (requires dprint
-0.55 or newer):
-
-```sh
-dprint add npm:@jakebailey/dprint-plugin-gofumpt
-```
-
-```jsonc
-{
-    // ...
-    "plugins": [
         "npm:@jakebailey/dprint-plugin-gofumpt@0.0.15"
     ]
 }

@@ -271,15 +271,14 @@ function updateVersionsTable(readme: string, version: string, gofumptVersion: st
 async function updateReadmeVersion(version: string) {
     const readmePath = "README.md";
     const readme = await fs.promises.readFile(readmePath, "utf8");
-    const updated = readme
-        .replace(
-            /gofumpt-v[0-9]+\.[0-9]+\.[0-9]+\.wasm/g,
-            `gofumpt-v${version}.wasm`,
-        )
-        .replace(
-            /@jakebailey\/dprint-plugin-gofumpt@[0-9]+\.[0-9]+\.[0-9]+/g,
-            `@jakebailey/dprint-plugin-gofumpt@${version}`,
-        );
+    const pluginSpecifierPattern = /npm:@jakebailey\/dprint-plugin-gofumpt@[^"\s]+/g;
+    if (!pluginSpecifierPattern.test(readme)) {
+        throw new Error("Could not find the pinned npm plugin specifier in README.md");
+    }
+    const updated = readme.replace(
+        pluginSpecifierPattern,
+        `npm:@jakebailey/dprint-plugin-gofumpt@${version}`,
+    );
     await writeIfChanged(readmePath, updated);
 }
 
