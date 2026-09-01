@@ -1,5 +1,13 @@
 # dprint-plugin-gofumpt
 
+## 0.0.17
+
+### Patch Changes
+
+- 80955c4: Update to Go 1.27 and TinyGo 0.42
+- 37f99c5: Reduce the Wasm binary size by replacing `encoding/json` with a
+  lightweight JSON codec
+
 ## 0.0.16
 
 ### Patch Changes
