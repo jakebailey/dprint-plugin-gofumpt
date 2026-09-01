@@ -1,6 +1,6 @@
 module github.com/jakebailey/dprint-plugin-gofumpt
 
-go 1.26.0
+go 1.27.0
 
 require mvdan.cc/gofumpt v0.11.1-0.20260820074422-a2bc6805583d
 
