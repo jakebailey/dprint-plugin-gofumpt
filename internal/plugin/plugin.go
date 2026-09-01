@@ -2,7 +2,6 @@ package plugin
 
 import (
 	"bytes"
-	"encoding/json"
 	"unsafe"
 
 	gofumpt "mvdan.cc/gofumpt/format"
@@ -54,26 +53,14 @@ func (p *Plugin) LicenseText(text string) uint32 {
 }
 
 func (p *Plugin) Info(version string) uint32 {
-	info := struct {
-		Name            string   `json:"name"`
-		Version         string   `json:"version"`
-		ConfigKey       string   `json:"configKey"`
-		FileExtensions  []string `json:"fileExtensions"`
-		FileNames       []string `json:"fileNames"`
-		HelpURL         string   `json:"helpUrl"`
-		ConfigSchemaURL string   `json:"configSchemaUrl"`
-		UpdateURL       string   `json:"updateUrl"`
-	}{
-		Name:            "dprint-plugin-gofumpt",
-		Version:         version,
-		ConfigKey:       "gofumpt",
-		FileExtensions:  []string{"go"},
-		FileNames:       []string{},
-		HelpURL:         "https://github.com/jakebailey/dprint-plugin-gofumpt",
-		ConfigSchemaURL: "https://plugins.dprint.dev/jakebailey/gofumpt/v" + version + "/schema.json",
-		UpdateURL:       "https://plugins.dprint.dev/jakebailey/gofumpt/latest.json",
-	}
-	data, _ := json.Marshal(info)
+	var data []byte
+	data = append(data, `{"name":"dprint-plugin-gofumpt","version":`...)
+	data = appendJSONString(data, version)
+	data = append(data, `,"configKey":"gofumpt","fileExtensions":`...)
+	data = appendJSONStringArray(data, []string{"go"})
+	data = append(data, `,"fileNames":[],"helpUrl":"https://github.com/jakebailey/dprint-plugin-gofumpt","configSchemaUrl":`...)
+	data = appendJSONString(data, "https://plugins.dprint.dev/jakebailey/gofumpt/v"+version+"/schema.json")
+	data = append(data, `,"updateUrl":"https://plugins.dprint.dev/jakebailey/gofumpt/latest.json"}`...)
 	return p.setSharedBytes(data)
 }
 
