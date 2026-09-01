@@ -725,6 +725,25 @@ export const test = task({
     description: "Builds and runs tests.",
     dependencies: [build],
     run: async () => {
+        console.log("Running TinyGo tests...");
+        await run("docker", [
+            "run",
+            "--rm",
+            "-v",
+            `${process.cwd()}:/src`,
+            "-w",
+            "/src",
+            "-e",
+            "GOFLAGS=-buildvcs=false",
+            DOCKER_IMAGE,
+            "tinygo",
+            "test",
+            "./internal/...",
+        ], {
+            stdio: "inherit",
+            verbose: true,
+        });
+
         const testDirs = await fs.promises.readdir("testdata");
         for (const testName of testDirs) {
             const stat = await fs.promises.stat(path.join("testdata", testName));

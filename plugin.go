@@ -5,74 +5,24 @@
 package main
 
 import (
-	"bytes"
 	_ "embed"
-	"encoding/json"
-	"fmt"
-	goversion "go/version"
 	"strings"
-	"unsafe"
 
-	gofumpt "mvdan.cc/gofumpt/format"
+	"github.com/jakebailey/dprint-plugin-gofumpt/internal/plugin"
 )
 
 func main() {}
 
-var (
-	sharedBytes []byte
-
-	formattedText []byte
-	errorText     string
-
-	config      pluginConfig
-	diagnostics []configDiagnostic
-)
-
-type pluginConfig struct {
-	LangVersion string      `json:"langVersion"`
-	ModulePath  string      `json:"modulePath"`
-	ExtraRules  bool        `json:"extraRules"`
-	Extra       extraConfig `json:"extra"`
-}
-
-type extraConfig struct {
-	GroupParams   bool `json:"groupParams"`
-	ClotheReturns bool `json:"clotheReturns"`
-	BalanceCalls  bool `json:"balanceCalls"`
-}
-
-type configDiagnostic struct {
-	PropertyName string `json:"propertyName"`
-	Message      string `json:"message"`
-}
-
-func setSharedBytes(data []byte) uint32 {
-	sharedBytes = data
-	return uint32(len(data))
-}
-
-func takeFromSharedBytes() []byte {
-	result := sharedBytes
-	sharedBytes = nil
-	return result
-}
+var instance plugin.Plugin
 
 //go:wasmexport get_shared_bytes_ptr
 func get_shared_bytes_ptr() uint32 {
-	if len(sharedBytes) == 0 {
-		return 0
-	}
-	return uint32(uintptr(unsafe.Pointer(&sharedBytes[0])))
+	return instance.SharedBytesPtr()
 }
 
 //go:wasmexport clear_shared_bytes
 func clear_shared_bytes(size uint32) uint32 {
-	if size == 0 {
-		sharedBytes = nil
-		return 0
-	}
-	sharedBytes = make([]byte, size)
-	return uint32(uintptr(unsafe.Pointer(&sharedBytes[0])))
+	return instance.ClearSharedBytes(size)
 }
 
 //go:wasmexport dprint_plugin_version_4
@@ -90,148 +40,65 @@ var version = strings.TrimSpace(rawVersion)
 
 //go:wasmexport get_license_text
 func get_license_text() uint32 {
-	return setSharedBytes([]byte(licenseText))
+	return instance.LicenseText(licenseText)
 }
 
 //go:wasmexport get_plugin_info
 func get_plugin_info() uint32 {
-	info := struct {
-		Name            string   `json:"name"`
-		Version         string   `json:"version"`
-		ConfigKey       string   `json:"configKey"`
-		FileExtensions  []string `json:"fileExtensions"`
-		FileNames       []string `json:"fileNames"`
-		HelpURL         string   `json:"helpUrl"`
-		ConfigSchemaURL string   `json:"configSchemaUrl"`
-		UpdateURL       string   `json:"updateUrl"`
-	}{
-		Name:            "dprint-plugin-gofumpt",
-		Version:         version,
-		ConfigKey:       "gofumpt",
-		FileExtensions:  []string{"go"},
-		FileNames:       []string{},
-		HelpURL:         "https://github.com/jakebailey/dprint-plugin-gofumpt",
-		ConfigSchemaURL: "https://plugins.dprint.dev/jakebailey/gofumpt/v" + version + "/schema.json",
-		UpdateURL:       "https://plugins.dprint.dev/jakebailey/gofumpt/latest.json",
-	}
-	data, _ := json.Marshal(info)
-	return setSharedBytes(data)
+	return instance.Info(version)
 }
 
 //go:wasmexport register_config
 func register_config(_ uint32) {
-	data := takeFromSharedBytes()
-	if data == nil {
-		return
-	}
-
-	diagnostics = nil
-	config = pluginConfig{}
-
-	var raw struct {
-		Plugin pluginConfig `json:"plugin"`
-	}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		diagnostics = []configDiagnostic{{
-			PropertyName: "gofumpt",
-			Message:      err.Error(),
-		}}
-		return
-	}
-	config = raw.Plugin
-
-	if config.LangVersion != "" && goversion.Lang(config.LangVersion) == "" {
-		diagnostics = append(diagnostics, configDiagnostic{
-			PropertyName: "langVersion",
-			Message:      fmt.Sprintf("invalid Go version: %q", config.LangVersion),
-		})
-		config.LangVersion = ""
-	}
+	instance.RegisterConfig()
 }
 
 //go:wasmexport release_config
 func release_config(_ uint32) {
-	config = pluginConfig{}
-	diagnostics = nil
+	instance.ReleaseConfig()
 }
 
 //go:wasmexport get_config_diagnostics
 func get_config_diagnostics(_ uint32) uint32 {
-	if len(diagnostics) == 0 {
-		return setSharedBytes([]byte("[]"))
-	}
-	data, _ := json.Marshal(diagnostics)
-	return setSharedBytes(data)
+	return instance.ConfigDiagnostics()
 }
 
 //go:wasmexport get_resolved_config
 func get_resolved_config(_ uint32) uint32 {
-	data, _ := json.Marshal(config)
-	return setSharedBytes(data)
+	return instance.ResolvedConfig()
 }
 
 //go:wasmexport get_config_file_matching
 func get_config_file_matching(_ uint32) uint32 {
-	return setSharedBytes([]byte(`{"fileExtensions":["go"],"fileNames":[]}`))
+	return instance.ConfigFileMatching()
 }
 
 //go:wasmexport check_config_updates
 func check_config_updates() uint32 {
-	_ = takeFromSharedBytes()
-	return setSharedBytes([]byte(`{"kind":"ok","data":[]}`))
+	return instance.CheckConfigUpdates()
 }
 
 //go:wasmexport set_file_path
 func set_file_path() {
-	_ = takeFromSharedBytes()
+	instance.SetFilePath()
 }
 
 //go:wasmexport set_override_config
 func set_override_config() {
-	_ = takeFromSharedBytes()
+	instance.SetOverrideConfig()
 }
 
 //go:wasmexport format
 func format(_ uint32) uint32 {
-	input := takeFromSharedBytes()
-	if len(input) == 0 {
-		return 0
-	}
-
-	opts := gofumpt.Options{
-		LangVersion: config.LangVersion,
-		ModulePath:  config.ModulePath,
-		Extra: gofumpt.Extra{
-			GroupParams:   config.ExtraRules || config.Extra.GroupParams,
-			ClotheReturns: config.ExtraRules || config.Extra.ClotheReturns,
-			BalanceCalls:  config.ExtraRules || config.Extra.BalanceCalls,
-		},
-	}
-
-	output, err := gofumpt.Source(input, opts)
-	if err != nil {
-		errorText = err.Error()
-		return 2
-	}
-
-	if bytes.Equal(output, input) {
-		return 0
-	}
-
-	formattedText = output
-	return 1
+	return instance.Format()
 }
 
 //go:wasmexport get_formatted_text
 func get_formatted_text() uint32 {
-	result := formattedText
-	formattedText = nil
-	return setSharedBytes(result)
+	return instance.FormattedText()
 }
 
 //go:wasmexport get_error_text
 func get_error_text() uint32 {
-	result := errorText
-	errorText = ""
-	return setSharedBytes([]byte(result))
+	return instance.ErrorText()
 }
