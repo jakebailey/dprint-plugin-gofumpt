@@ -1,6 +1,6 @@
 {
     "name": "@jakebailey/dprint-plugin-gofumpt",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "description": "Wasm module for dprint-plugin-gofumpt, a dprint plugin for formatting Go code with gofumpt.",
     "main": "./index.js",
     "types": "./index.d.ts",
