@@ -44,7 +44,7 @@
         "@dprint/typescript": "0.96.1",
         "@types/node": "^26.4.0",
         "binaryen": "^132.0.0",
-        "dprint": "^0.56.1",
+        "dprint": "^0.57.4",
         "dprint-plugin-yaml": "0.6.0",
         "hereby": "^1.15.2",
         "typescript": "^7.0.2"
