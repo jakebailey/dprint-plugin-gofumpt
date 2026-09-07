@@ -1,5 +1,11 @@
 # dprint-plugin-gofumpt
 
+## 0.0.18
+
+### Patch Changes
+
+- a220b60: Update gofumpt to v0.12.0
+
 ## 0.0.17
 
 ### Patch Changes
