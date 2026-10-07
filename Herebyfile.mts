@@ -388,8 +388,9 @@ const pullTinygo = task({
 async function patchWasm(wasmBinary: Uint8Array) {
     const module = binaryen.readBinary(wasmBinary);
 
-    // Set _initialize as the start function
+    // Initialize at instantiation, without exposing an initializer for hosts to call again.
     module.setStart(module.getFunction("_initialize"));
+    module.removeExport("_initialize");
 
     const output = module.emitBinary();
     await fs.promises.writeFile(WASM_FILE, output);

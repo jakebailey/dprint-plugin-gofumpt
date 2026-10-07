@@ -4,6 +4,11 @@ const createFromBuffer = require("@dprint/formatter").createFromBuffer;
 const getPath = require("./index").getPath;
 
 const buffer = require("fs").readFileSync(getPath());
+const wasmModule = new WebAssembly.Module(buffer);
+assert.ok(
+    !WebAssembly.Module.exports(wasmModule).some((entry) => entry.name === "_initialize"),
+    "The start function already initializes the plugin; hosts must not initialize it again.",
+);
 const formatter = createFromBuffer(buffer);
 const result = formatter.formatText({
     filePath: "file.go",
