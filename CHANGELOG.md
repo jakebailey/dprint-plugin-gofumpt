@@ -1,5 +1,12 @@
 # dprint-plugin-gofumpt
 
+## 0.0.19
+
+### Patch Changes
+
+- d23e12b: Fix plugin loading in dprint 0.61.0 while retaining compatibility
+  with older dprint versions and the JavaScript formatter API.
+
 ## 0.0.18
 
 ### Patch Changes
