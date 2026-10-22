@@ -35,6 +35,18 @@ jobs:
       - run: git add .
       - run: git diff --staged --exit-code
 
+      - name: Check out TypeScript
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: microsoft/TypeScript
+          ref: 28534d7609062699a68b1b66e2367f8d95dbf290
+          path: TypeScript
+          persist-credentials: false
+
+      - name: Smoke test TypeScript formatting
+        working-directory: TypeScript
+        run: ../node_modules/.bin/dprint fmt --incremental=false --plugins ../plugin.wasm -- "**/*.go"
+
   required:
     runs-on: ubuntu-latest
     if: ${{ always() }}
