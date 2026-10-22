@@ -399,7 +399,10 @@ async function patchWasm(wasmBinary: Uint8Array) {
 
 const tinygoArgs = [
     "build",
-    "-target=wasm-unknown",
+    // wasm-unknown with a 1 MiB stack instead of the linker's default of 64 KiB,
+    // which deeply nested code (ex. a long chain of string concatenations)
+    // overflows, since gofumpt walks the syntax tree recursively.
+    "-target=tinygo-target.json",
     "-scheduler=none",
     // The target defaults to the leaking GC, which never frees memory, so an
     // instance would run out of memory after formatting enough files.
