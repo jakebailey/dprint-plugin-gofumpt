@@ -401,6 +401,9 @@ const tinygoArgs = [
     "build",
     "-target=wasm-unknown",
     "-scheduler=none",
+    // The target defaults to the leaking GC, which never frees memory, so an
+    // instance would run out of memory after formatting enough files.
+    "-gc=precise",
     "-no-debug",
     "-opt=2",
 ];
