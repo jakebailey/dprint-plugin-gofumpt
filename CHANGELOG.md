@@ -1,5 +1,15 @@
 # dprint-plugin-gofumpt
 
+## 0.0.20
+
+### Patch Changes
+
+- b878d3d: Fix a crash on deeply nested code, like a long chain of string
+  concatenations, by using a 1 MiB stack instead of 64 KiB.
+- d4c9aa1: Free memory between formats, so a plugin instance no longer runs out
+  of memory after formatting many files.
+- d288214: Update TinyGo to 0.43.0.
+
 ## 0.0.19
 
 ### Patch Changes
