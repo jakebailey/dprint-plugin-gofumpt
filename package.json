@@ -2,12 +2,6 @@
     "name": "@jakebailey/dprint-plugin-gofumpt",
     "version": "0.0.19",
     "description": "Wasm module for dprint-plugin-gofumpt, a dprint plugin for formatting Go code with gofumpt.",
-    "main": "./index.js",
-    "types": "./index.d.ts",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/jakebailey/dprint-plugin-gofumpt.git"
-    },
     "keywords": [
         "go",
         "gofumpt",
@@ -16,21 +10,24 @@
         "formatter",
         "dprint"
     ],
-    "author": "Jake Bailey",
-    "license": "MIT",
+    "homepage": "https://github.com/jakebailey/dprint-plugin-gofumpt#readme",
     "bugs": {
         "url": "https://github.com/jakebailey/dprint-plugin-gofumpt/issues"
     },
-    "homepage": "https://github.com/jakebailey/dprint-plugin-gofumpt#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jakebailey/dprint-plugin-gofumpt.git"
+    },
+    "license": "MIT",
+    "author": "Jake Bailey",
+    "main": "./index.js",
+    "types": "./index.d.ts",
     "files": [
         "index.js",
         "index.d.ts",
         "plugin.wasm",
         "metadata/LICENSES"
     ],
-    "publishConfig": {
-        "access": "public"
-    },
     "scripts": {
         "typecheck": "tsc",
         "version": "changeset version && hereby releaseMetadata",
@@ -49,5 +46,8 @@
         "hereby": "^1.15.2",
         "typescript": "^7.0.2"
     },
-    "packageManager": "pnpm@12.15.0+sha512.b3951d6d6ff4a9f13dc7cf56cd28d2b8eb37dbcc9c68e52e1e1191873ea9f82a017287ab50baadc5ccc494f036c67c0e47eb13608c2fa36f47711b61ea128e61"
+    "packageManager": "pnpm@12.15.0+sha512.b3951d6d6ff4a9f13dc7cf56cd28d2b8eb37dbcc9c68e52e1e1191873ea9f82a017287ab50baadc5ccc494f036c67c0e47eb13608c2fa36f47711b61ea128e61",
+    "publishConfig": {
+        "access": "public"
+    }
 }
