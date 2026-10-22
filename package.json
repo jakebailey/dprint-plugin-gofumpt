@@ -37,17 +37,17 @@
         "prepack": "hereby build"
     },
     "devDependencies": {
-        "@changesets/cli": "^3.0.2",
-        "@dprint/formatter": "^0.5.1",
-        "@dprint/json": "0.23.0",
-        "@dprint/markdown": "0.23.3",
+        "@changesets/cli": "^3.0.3",
+        "@dprint/formatter": "^0.6.0",
+        "@dprint/json": "0.25.2",
+        "@dprint/markdown": "0.27.1",
         "@dprint/typescript": "0.96.1",
-        "@types/node": "^26.5.0",
+        "@types/node": "^26.6.5",
         "binaryen": "^132.0.0",
-        "dprint": "^0.57.4",
+        "dprint": "^0.64.1",
         "dprint-plugin-yaml": "0.6.0",
         "hereby": "^1.15.2",
         "typescript": "^7.0.2"
     },
-    "packageManager": "pnpm@12.3.4+sha512.961aa41fb077da3a04a441d9f8e15ebc0c96da8ef710b2eb67bf9ee7cb0610eabd48f1fd85f51cffe73846785fa0f87c56a3a872a1d893f8446741b5cce45457"
+    "packageManager": "pnpm@12.15.0+sha512.b3951d6d6ff4a9f13dc7cf56cd28d2b8eb37dbcc9c68e52e1e1191873ea9f82a017287ab50baadc5ccc494f036c67c0e47eb13608c2fa36f47711b61ea128e61"
 }
