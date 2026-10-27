@@ -37,7 +37,7 @@
         "@changesets/cli": "^3.0.3",
         "@dprint/formatter": "^0.6.0",
         "@dprint/json": "0.25.2",
-        "@dprint/markdown": "0.27.1",
+        "@dprint/markdown": "0.28.2",
         "@dprint/typescript": "0.96.1",
         "@types/node": "^26.6.5",
         "binaryen": "^132.0.0",
